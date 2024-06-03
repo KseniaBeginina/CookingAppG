@@ -1,4 +1,3 @@
 package com.example.cookingappg
 
-class DishCard {
-}
+data class DishCard (val name:String, val img:Int)

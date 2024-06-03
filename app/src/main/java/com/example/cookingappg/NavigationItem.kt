@@ -1,4 +1,3 @@
 package com.example.cookingappg
 
-class NavigationItem {
-}
+data class NavigationItem (val icon: Int, val title: String) {}
