@@ -7,12 +7,14 @@ import androidx.navigation.compose.composable
 import com.example.cookingappg.pages.Menu
 import com.example.cookingappg.pages.Login
 import com.example.cookingappg.pages.Registration
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun NavGraph(navController: NavHostController){
+    val startDestination = if (FirebaseAuth.getInstance().currentUser == null) Routes.LOGIN else Routes.MENU
     NavHost(
         navController = navController,
-        startDestination = Routes.LOGIN
+        startDestination = startDestination
     )
     {
         composable(Routes.LOGIN) {

@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,10 +24,7 @@ import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun CustomInput (text:String, placeholder:String) {
-    var newText by remember {
-        mutableStateOf(text)
-    }
+fun CustomInput (state: MutableState<String>, placeholder:String) {
 
     TextField(
         modifier = Modifier.size(width = 343.dp, height = 56.dp),
@@ -48,13 +46,13 @@ fun CustomInput (text:String, placeholder:String) {
             color = TextLight,
             fontFamily = FontFamily(Font(R.font.montserratmedium))
         ) },
-        value = newText,
-        onValueChange = { newText = it }
+        value = state.value,
+        onValueChange = { state.value = it }
     )
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun CheckInp() {
-    CustomInput("","Enter text")
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//private fun CheckInp() {
+//    CustomInput("","Enter text")
+//}

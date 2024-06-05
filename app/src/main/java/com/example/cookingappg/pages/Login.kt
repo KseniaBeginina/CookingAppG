@@ -1,6 +1,7 @@
 package com.example.cookingappg.pages
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -29,13 +31,17 @@ import com.example.cookingappg.components.CustomInput
 import com.example.cookingappg.components.CustomTitle
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import javax.annotation.Nonnull
 
 @Composable
 fun Login(navigate:(String)->Unit) {
-    val email by remember {
+    val email = remember {
         mutableStateOf("")
     }
-    val password by remember {
+    val password = remember {
         mutableStateOf("")
     }
 
@@ -51,12 +57,14 @@ fun Login(navigate:(String)->Unit) {
             Image(
                 painter = painterResource(id = R.drawable.cook2),
                 contentDescription = null,
-                modifier = Modifier.size(300.dp)
+                modifier = Modifier.size(250.dp)
             )
             CustomTitle("Войти")
             CustomInput(email, "Email")
             CustomInput(password, "Пароль")
         }
+
+        val context = LocalContext.current
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,7 +73,24 @@ fun Login(navigate:(String)->Unit) {
         ){
             CustomButton(text = "Войти"){
                 Log.d("Login","click")
-                navigate(Routes.MENU)
+                if (email.value.isEmpty() || password.value.isEmpty()){
+                    Toast.makeText(context, "Поля не могут быть пустыми", Toast.LENGTH_SHORT).show()
+                }else if(password.value.length<6){
+                    Toast.makeText(context, "Пароль должен быть не менее 6 символов", Toast.LENGTH_SHORT).show()
+                }else{
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email.value, password.value)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                navigate(Routes.MENU)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Такого аккаунта не существует",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                }
             }
             Column (
                 horizontalAlignment = Alignment.CenterHorizontally

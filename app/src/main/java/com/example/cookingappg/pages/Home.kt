@@ -21,11 +21,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cookingappg.DishCard
 import com.example.cookingappg.R
+import com.example.cookingappg.Routes
+import com.example.cookingappg.components.CustomButton
 import com.example.cookingappg.components.CustomTitle
 import com.example.cookingappg.components.DishShortCard
 import com.example.cookingappg.components.DishTypeChoise
 import com.example.cookingappg.components.FilterButton
 import com.example.cookingappg.components.SearchBar
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun Home(navigate:(String)->Unit) {
@@ -90,6 +93,11 @@ fun Home(navigate:(String)->Unit) {
                         }
                     }
                 }
+            }
+
+            CustomButton(text = "Выйти") {
+                FirebaseAuth.getInstance().signOut()
+                navigate(Routes.LOGIN)
             }
         }
     }

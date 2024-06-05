@@ -64,15 +64,19 @@ fun Menu() {
         }
     }
 
+    val showBottomBar = backstackState?.destination?.route != Routes.LOGIN
+
     Scaffold (
         bottomBar = {
-            NavBar (bottomNavigationItems, selectedItem) { index ->
-                when (index){
-                    0 -> navigateToTab(navController, Routes.HOME)
-                    1 -> navigateToTab(navController, Routes.PLANER)
-                    2 -> navigateToTab(navController, Routes.ADD)
-                    3 -> navigateToTab(navController, Routes.KITCHEN)
-                    4 -> navigateToTab(navController, Routes.PROFILE)
+            if (showBottomBar){
+                NavBar (bottomNavigationItems, selectedItem) { index ->
+                    when (index){
+                        0 -> navigateToTab(navController, Routes.HOME)
+                        1 -> navigateToTab(navController, Routes.PLANER)
+                        2 -> navigateToTab(navController, Routes.ADD)
+                        3 -> navigateToTab(navController, Routes.KITCHEN)
+                        4 -> navigateToTab(navController, Routes.PROFILE)
+                    }
                 }
             }
         }
@@ -83,6 +87,9 @@ fun Menu() {
             }
             composable(Routes.FILTERS){
                 Filters(navController::navigate)
+            }
+            composable(Routes.LOGIN){
+                Login(navController::navigate)
             }
         }
     }

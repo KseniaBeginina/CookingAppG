@@ -1,6 +1,7 @@
 package com.example.cookingappg.pages
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -33,19 +35,23 @@ import com.example.cookingappg.components.CustomTitle
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 @Composable
 fun Registration(navigate:(String)->Unit) {
-    val email by remember {
+    val email = remember {
         mutableStateOf("")
     }
-    val username by remember {
+    val username = remember {
         mutableStateOf("")
     }
-    val password by remember {
+    val password = remember {
         mutableStateOf("")
     }
-    val check by remember {
+    val check = remember {
         mutableStateOf(false)
     }
 
@@ -54,7 +60,7 @@ fun Registration(navigate:(String)->Unit) {
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -63,7 +69,7 @@ fun Registration(navigate:(String)->Unit) {
             Image(
                 painter = painterResource(id = R.drawable.cook),
                 contentDescription = null,
-                modifier = Modifier.size(300.dp)
+                modifier = Modifier.size(250.dp)
             )
 
             CustomTitle("Создать аккаунт")
@@ -75,7 +81,7 @@ fun Registration(navigate:(String)->Unit) {
                 modifier = Modifier.width(343.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CustomCheckBox(value = check)
+                CustomCheckBox(check)
                 Text(
                     text = "Я согласен с ",
                     fontSize = 14.sp,
@@ -123,6 +129,8 @@ fun Registration(navigate:(String)->Unit) {
             )
         }
 
+        val context = LocalContext.current
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -130,6 +138,30 @@ fun Registration(navigate:(String)->Unit) {
         ){
             CustomButton(text = "Создать аккаунт"){
                 Log.d("Registration","click")
+                if (email.value.isEmpty() || password.value.isEmpty() || username.value.isEmpty()){
+                    Toast.makeText(context, "Поля не могут быть пустыми", Toast.LENGTH_SHORT).show()
+                }else if(password.value.length<6){
+                    Toast.makeText(context, "Пароль должен быть не менее 6 символов", Toast.LENGTH_SHORT).show()
+                }else if (!check.value){
+                    Toast.makeText(context, "Необходимо согласиться", Toast.LENGTH_SHORT).show()
+                }else{
+                    FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.value, password.value)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                val userInfo: HashMap<String, String> = HashMap()
+                                userInfo.put("email", email.value)
+                                userInfo.put("name", username.value)
+                                FirebaseDatabase.getInstance().getReference()
+                                    .child("Users")
+                                    .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                                    .setValue(userInfo)
+                                navigate(Routes.MENU)
+                            } else {
+                                Toast.makeText(context, "Ошибка регистрации", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        }
+                }
             }
             Row (
             ){
