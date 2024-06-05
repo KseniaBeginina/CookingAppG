@@ -39,6 +39,9 @@ fun Registration(navigate:(String)->Unit) {
     val email by remember {
         mutableStateOf("")
     }
+    val username by remember {
+        mutableStateOf("")
+    }
     val password by remember {
         mutableStateOf("")
     }
@@ -65,6 +68,7 @@ fun Registration(navigate:(String)->Unit) {
 
             CustomTitle("Создать аккаунт")
             CustomInput(email, "Email")
+            CustomInput(username, "Имя")
             CustomInput(password, "Пароль")
 
             Row(
