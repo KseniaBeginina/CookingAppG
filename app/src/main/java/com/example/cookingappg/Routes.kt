@@ -12,7 +12,10 @@ object Routes {
     val KITCHEN = "/kitchen"
     val PROFILE = "/user"
     val FILTERS = "/filters"
-    //other
+    //recipe pages
     val RECIPE = "/recipe"
-
+    //profile pages
+    val FAMILY = "/family"
+    val SETTINGS = "/settings"
+    val EDITPROF = "/editProf"
 }

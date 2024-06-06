@@ -14,6 +14,7 @@ import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -90,27 +91,31 @@ fun Filters(navigate:(String)->Unit) {
                 color = TextDark
             )
 
-            var sliderPosition by remember{
+            val sliderPosition = remember{
                 mutableStateOf(0f..90f)
             }
-            var from by remember {
-                mutableStateOf("")
+            val from = remember {
+                mutableStateOf("0")
             }
-            var to by remember {
-                mutableStateOf("")
+            val to = remember {
+                mutableStateOf("90")
+            }
+
+            LaunchedEffect(key1 = from.value, key2 = to.value) {
+                if (from.value.isNotEmpty() && to.value.isNotEmpty()) {
+                    sliderPosition.value = from.value.toFloat()..to.value.toFloat()
+                }
             }
 
             RangeSlider(
-                value = sliderPosition,
+                value = sliderPosition.value,
                 valueRange = 0f..90f,
-                steps = 16,
+                steps = 90,
                 onValueChange = {
-                    sliderPosition = it
-                    from = sliderPosition.toString()
+                    sliderPosition.value = it
+                    from.value = sliderPosition.value.start.toInt().toString()
+                    to.value = sliderPosition.value.endInclusive.toInt().toString()
                     Log.d("Slider","$sliderPosition")
-                },
-                onValueChangeFinished = {
-                    to = sliderPosition.toString()
                 },
                 colors = SliderDefaults.colors(
                     thumbColor = Primary,

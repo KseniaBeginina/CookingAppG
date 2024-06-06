@@ -29,12 +29,13 @@ import androidx.compose.ui.unit.sp
 import com.example.cookingappg.DishCard
 import com.example.cookingappg.R
 import com.example.cookingappg.Routes
+import com.example.cookingappg.data.Recipe
 import com.example.cookingappg.ui.theme.Gray
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
 
 @Composable
-fun DishShortCard(dish: DishCard, onClick:()->Unit, navigate:(String)->Unit) {
+fun DishShortCard(recipe: Recipe, onClick:()->Unit, navigate:(String)->Unit) {
     Column(
         modifier = Modifier
             .width(164.dp)
@@ -51,7 +52,7 @@ fun DishShortCard(dish: DishCard, onClick:()->Unit, navigate:(String)->Unit) {
             modifier = Modifier
                 .height(100.dp)
                 .width(164.dp),
-            painter = painterResource(id = dish.img),
+            painter = painterResource(id = R.drawable.humster),
             contentScale = ContentScale.Crop,
             contentDescription = null
         )
@@ -68,7 +69,7 @@ fun DishShortCard(dish: DishCard, onClick:()->Unit, navigate:(String)->Unit) {
         ){
             Text(
                 modifier = Modifier.width(112.dp),
-                text = dish.name,
+                text = recipe.name,
                 fontSize = 16.sp,
                 fontFamily = FontFamily(Font(R.font.montserratmedium)),
                 color = TextDark
@@ -86,6 +87,19 @@ fun DishShortCard(dish: DishCard, onClick:()->Unit, navigate:(String)->Unit) {
 @Preview(showBackground = true)
 @Composable
 private fun CheckDishShortCard() {
-    val dish = DishCard("Хомяк с абрикосами",R.drawable.humster)
-    DishShortCard(dish,{}){}
+    val recipe = Recipe(
+        userId = 1,
+        name = "test",
+        category = "test",
+        img = "",
+        cookTime = 15,
+        portions = 2,
+        calories = 150f,
+        proteins = 10f,
+        fats = 3.5f,
+        carbos = 16f,
+        rec = "test rec",
+        liked = true
+    )
+    DishShortCard(recipe,{}){}
 }

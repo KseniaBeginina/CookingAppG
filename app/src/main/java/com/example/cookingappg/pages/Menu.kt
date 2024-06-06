@@ -64,7 +64,8 @@ fun Menu() {
         }
     }
 
-    val showBottomBar = backstackState?.destination?.route != Routes.LOGIN
+    val showBottomBar = backstackState?.destination?.route != Routes.LOGIN ||
+            backstackState.destination.route != Routes.REGISTRATION
 
     Scaffold (
         bottomBar = {
@@ -85,11 +86,17 @@ fun Menu() {
             composable(Routes.HOME){
                 Home(navController::navigate)
             }
+            composable(Routes.PROFILE){
+                Profile(navController::navigate)
+            }
             composable(Routes.FILTERS){
                 Filters(navController::navigate)
             }
             composable(Routes.LOGIN){
                 Login(navController::navigate)
+            }
+            composable(Routes.REGISTRATION){
+                Registration(navController::navigate)
             }
         }
     }

@@ -32,13 +32,16 @@ import com.example.cookingappg.components.CustomButton
 import com.example.cookingappg.components.CustomCheckBox
 import com.example.cookingappg.components.CustomInput
 import com.example.cookingappg.components.CustomTitle
+import com.example.cookingappg.data.User
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
 
 @Composable
 fun Registration(navigate:(String)->Unit) {
@@ -130,6 +133,7 @@ fun Registration(navigate:(String)->Unit) {
         }
 
         val context = LocalContext.current
+        var auth = Firebase.auth
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -148,13 +152,16 @@ fun Registration(navigate:(String)->Unit) {
                     FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.value, password.value)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                val userInfo: HashMap<String, String> = HashMap()
-                                userInfo.put("email", email.value)
-                                userInfo.put("name", username.value)
+                                val user = User(
+                                    name = username.value,
+                                    email = email.value,
+                                    password = password.value,
+                                    img = ""
+                                )
                                 FirebaseDatabase.getInstance().getReference()
-                                    .child("Users")
+                                    .child("User")
                                     .child(FirebaseAuth.getInstance().currentUser!!.uid)
-                                    .setValue(userInfo)
+                                    .setValue(user)
                                 navigate(Routes.MENU)
                             } else {
                                 Toast.makeText(context, "Ошибка регистрации", Toast.LENGTH_SHORT)

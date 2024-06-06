@@ -33,7 +33,7 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun Home(navigate:(String)->Unit) {
 
-    val text by remember {
+    val text = remember {
         mutableStateOf("")
     }
 
@@ -54,7 +54,7 @@ fun Home(navigate:(String)->Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                SearchBar(text = text)
+                SearchBar(state = text)
                 FilterButton(navigate)
             }
 
@@ -71,28 +71,22 @@ fun Home(navigate:(String)->Unit) {
                 DishTypeChoise(text = "бебра") {}
             }
 
-            val dishes = listOf(
-                DishCard("Абоба с мухой", R.drawable.humster),
-                DishCard("Лупа с пупой",R.drawable.humster),
-                DishCard("Хомяк с говном",R.drawable.humster)
-            )
-
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                itemsIndexed(dishes) { index, dish ->
-                    if (index % 2 == 0) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            DishShortCard(dish, {}, navigate)
-                            dishes.getOrNull(index + 1)?.let { DishShortCard(it, {}, navigate) }
-                        }
-                    }
-                }
+//                itemsIndexed(dishes) { index, dish ->
+//                    if (index % 2 == 0) {
+//                        Row(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+//                        ) {
+//                            DishShortCard(dish, {}, navigate)
+//                            dishes.getOrNull(index + 1)?.let { DishShortCard(it, {}, navigate) }
+//                        }
+//                    }
+//                }
             }
 
             CustomButton(text = "Выйти") {

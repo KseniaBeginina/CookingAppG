@@ -1,6 +1,7 @@
 package com.example.cookingappg.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,7 +16,7 @@ import com.example.cookingappg.ui.theme.TextDark
 @Composable
 fun CustomTitle (text:String) {
     Text(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.wrapContentWidth(),
         textAlign = TextAlign.Center,
         text = text,
         fontSize = 24.sp,

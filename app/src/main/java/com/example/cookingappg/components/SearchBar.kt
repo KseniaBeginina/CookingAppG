@@ -14,6 +14,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,18 +36,15 @@ import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
 
 @Composable
-fun SearchBar (text:String) {
-    var newText by remember {
-        mutableStateOf("")
-    }
+fun SearchBar (state: MutableState<String>) {
 
     var iconTint by remember {
         mutableStateOf(TextLight)
     }
 
     BasicTextField(
-        value = newText,
-        onValueChange = { newText = it },
+        value = state.value,
+        onValueChange = { state.value = it },
         textStyle = TextStyle(
             fontSize = 16.sp,
             fontFamily = FontFamily(Font(R.font.montserratmedium)),
@@ -71,7 +69,7 @@ fun SearchBar (text:String) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
 
-                if (newText.isEmpty()) {
+                if (state.value.isEmpty()) {
                     Text(
                         text = "Введите блюдо/продукт",
                         color = TextLight
@@ -86,9 +84,9 @@ fun SearchBar (text:String) {
     )
 
 }
-
-@Preview(showBackground = true)
-@Composable
-private fun CheckSearchBar() {
-    SearchBar("")
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//private fun CheckSearchBar() {
+//    SearchBar("")
+//}
