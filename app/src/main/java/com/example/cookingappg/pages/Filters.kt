@@ -1,6 +1,7 @@
 package com.example.cookingappg.pages
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,19 +30,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
 import com.example.cookingappg.Routes
-import com.example.cookingappg.components.CustomOutlinedInput
+import com.example.cookingappg.components.CustomOutlinedInputNumber
 import com.example.cookingappg.components.CustomTitle
 import com.example.cookingappg.components.TwoColorButton
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.Simple
 import com.example.cookingappg.ui.theme.TextDark
+import com.example.cookingappg.ui.theme.White
 
 @Composable
 fun Filters(navigate:(String)->Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .background(White),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -132,8 +135,8 @@ fun Filters(navigate:(String)->Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                CustomOutlinedInput(from, "От ", "минут")
-                CustomOutlinedInput(to, "До ", "минут")
+                CustomOutlinedInputNumber(from, "От ", "минут")
+                CustomOutlinedInputNumber(to, "До ", "минут")
             }
         }
     }

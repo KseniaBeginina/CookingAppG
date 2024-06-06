@@ -6,7 +6,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +17,6 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
@@ -28,18 +26,9 @@ import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun CustomOutlinedInput (state: MutableState<String>, label: String, suffix: String) {
-    var isEditing by remember { mutableStateOf(false) }
+fun CustomOutlinedInputText (state: MutableState<String>, label: String, suffix: String) {
     OutlinedTextField(
-        modifier = Modifier.size(width = 166.dp, height = 56.dp)
-            .onFocusChanged { focused: FocusState ->
-                if (!focused.isFocused) {
-                    isEditing = false
-                }
-                if (!isEditing && state.value.isEmpty()){
-                    state.value = "90"
-                }
-            },
+        modifier = Modifier.size(width = 340.dp, height = 56.dp),
         singleLine = true,
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = White,
@@ -70,19 +59,12 @@ fun CustomOutlinedInput (state: MutableState<String>, label: String, suffix: Str
         },
         shape = RoundedCornerShape(12.dp),
         value = state.value,
-        onValueChange = {
-            if (it.isEmpty()) {
-                state.value = ""
-            } else if (it.all { it.isDigit() } && it.toIntOrNull() in 0..90) {
-                state.value = it
-            }
-            isEditing = true
-        }
+        onValueChange = {        }
     )
 }
 //
 //@Preview(showBackground = true)
 //@Composable
 //private fun CheckInp() {
-//    CustomOutlinedInput("", "Enter text", "минут")
+//    CustomOutlinedInputText("", "Enter text", "минут")
 //}

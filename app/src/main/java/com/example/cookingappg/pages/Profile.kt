@@ -53,7 +53,7 @@ import com.google.firebase.auth.FirebaseAuth
 fun Profile(navigate:(String)->Unit) {
 
     Column (
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(White)
     ){
         Column(
             modifier = Modifier
@@ -88,7 +88,7 @@ fun Profile(navigate:(String)->Unit) {
                 CustomTitle("Профиль")
 
                 Spacer(
-                    modifier = Modifier.width(86.dp)
+                    modifier = Modifier.width(42.dp)
                 )
 
                 IconButton(
@@ -100,6 +100,25 @@ fun Profile(navigate:(String)->Unit) {
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.edit),
+                        contentDescription = null,
+                        tint = Primary
+                    )
+                }
+
+                Spacer(
+                    modifier = Modifier.width(12.dp)
+                )
+
+                IconButton(
+                    modifier = Modifier.size(32.dp),
+                    onClick = {
+                        FirebaseAuth.getInstance().signOut()
+                        navigate(Routes.LOGIN)
+                        Log.d("LogOut", "User email: ${FirebaseAuth.getInstance().currentUser?.email}")
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.logout),
                         contentDescription = null,
                         tint = Primary
                     )
@@ -119,7 +138,9 @@ fun Profile(navigate:(String)->Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ){
-                CustomTitle(text = "User Name")
+                CustomTitle(
+                    text = ""
+                )
 
 //                Text(
 //                    text = "No family",

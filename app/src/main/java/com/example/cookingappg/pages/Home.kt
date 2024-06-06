@@ -1,6 +1,7 @@
 package com.example.cookingappg.pages
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import com.example.cookingappg.components.DishShortCard
 import com.example.cookingappg.components.DishTypeChoise
 import com.example.cookingappg.components.FilterButton
 import com.example.cookingappg.components.SearchBar
+import com.example.cookingappg.ui.theme.White
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -38,7 +40,7 @@ fun Home(navigate:(String)->Unit) {
     }
 
     Column (
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(White)
     ){
         Column(
             modifier = Modifier
@@ -87,11 +89,6 @@ fun Home(navigate:(String)->Unit) {
 //                        }
 //                    }
 //                }
-            }
-
-            CustomButton(text = "Выйти") {
-                FirebaseAuth.getInstance().signOut()
-                navigate(Routes.LOGIN)
             }
         }
     }

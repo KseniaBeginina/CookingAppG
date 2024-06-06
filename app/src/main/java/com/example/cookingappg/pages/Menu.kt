@@ -89,6 +89,9 @@ fun Menu() {
             composable(Routes.PROFILE){
                 Profile(navController::navigate)
             }
+            composable(Routes.EDITPROF){
+                ProfileEdit(navController::navigate)
+            }
             composable(Routes.FILTERS){
                 Filters(navController::navigate)
             }
