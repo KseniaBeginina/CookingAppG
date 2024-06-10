@@ -1,7 +1,7 @@
 package com.example.cookingappg.data
 
 data class Recipe(
-    val userId: Long,
+    val userUid: String,
     val name: String,
     val category: String,
     val img: String,
@@ -12,6 +12,6 @@ data class Recipe(
     val fats: Float,
     val carbos: Float,
     val rec: String,
-    val liked: Boolean
-
+    val liked: Boolean,
+    val products: List<Product>
 )

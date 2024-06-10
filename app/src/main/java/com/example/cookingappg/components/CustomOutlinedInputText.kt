@@ -26,7 +26,7 @@ import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun CustomOutlinedInputText (state: MutableState<String>, label: String, suffix: String) {
+fun CustomOutlinedInputText (state: MutableState<String>, label: String, suffix: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         modifier = Modifier.size(width = 340.dp, height = 56.dp),
         singleLine = true,
@@ -59,7 +59,7 @@ fun CustomOutlinedInputText (state: MutableState<String>, label: String, suffix:
         },
         shape = RoundedCornerShape(12.dp),
         value = state.value,
-        onValueChange = {        }
+        onValueChange = onValueChange
     )
 }
 //

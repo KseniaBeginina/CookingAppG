@@ -43,6 +43,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 @Composable
@@ -59,6 +60,9 @@ fun Registration(navigate:(String)->Unit) {
     val check = remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
+    val auth = Firebase.auth
+    val database = Firebase.database.reference
 
     Column(
         modifier = Modifier
@@ -129,14 +133,13 @@ fun Registration(navigate:(String)->Unit) {
             Image(
                 painter = painterResource(id = R.drawable.socials),
                 contentDescription = null,
-                modifier = Modifier.size(32.dp).clickable {
-                    Log.d("Google","click")
-                }
+                modifier = Modifier
+                    .size(32.dp)
+                    .clickable {
+                        Log.d("Google", "click")
+                    }
             )
         }
-
-        val context = LocalContext.current
-        var auth = Firebase.auth
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -152,18 +155,16 @@ fun Registration(navigate:(String)->Unit) {
                 }else if (!check.value){
                     Toast.makeText(context, "Необходимо согласиться", Toast.LENGTH_SHORT).show()
                 }else{
-                    FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.value, password.value)
+                   auth.createUserWithEmailAndPassword(email.value, password.value)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 val user = User(
                                     name = username.value,
                                     email = email.value,
-                                    password = password.value,
+                                    password = "",
                                     img = ""
                                 )
-                                FirebaseDatabase.getInstance().getReference()
-                                    .child("User")
-                                    .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                                database.child("User").child(auth.currentUser!!.uid)
                                     .setValue(user)
                                 navigate(Routes.MENU)
                             } else {
@@ -192,9 +193,6 @@ fun Registration(navigate:(String)->Unit) {
                 )
             }
         }
-
-
-
     }
 }
 

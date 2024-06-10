@@ -36,6 +36,8 @@ import com.example.cookingappg.ui.theme.White
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import javax.annotation.Nonnull
 
 @Composable
@@ -46,6 +48,8 @@ fun Login(navigate:(String)->Unit) {
     val password = remember {
         mutableStateOf("")
     }
+    val context = LocalContext.current
+    val auth = Firebase.auth
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp).background(White),
@@ -66,8 +70,6 @@ fun Login(navigate:(String)->Unit) {
             CustomInput(password, "Пароль")
         }
 
-        val context = LocalContext.current
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -80,7 +82,7 @@ fun Login(navigate:(String)->Unit) {
                 }else if(password.value.length<6){
                     Toast.makeText(context, "Пароль должен быть не менее 6 символов", Toast.LENGTH_SHORT).show()
                 }else{
-                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email.value, password.value)
+                    auth.signInWithEmailAndPassword(email.value, password.value)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 navigate(Routes.MENU)
