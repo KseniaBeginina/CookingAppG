@@ -26,16 +26,16 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cookingappg.DishCard
 import com.example.cookingappg.R
-import com.example.cookingappg.Routes
+import com.example.cookingappg.data.Product
+import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.data.Recipe
 import com.example.cookingappg.ui.theme.Gray
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
 
 @Composable
-fun DishShortCard(recipe: Recipe, onClick:()->Unit, navigate:(String)->Unit) {
+fun DishShortCard(recipe: Recipe, onClick:()->Unit) {
     Column(
         modifier = Modifier
             .width(164.dp)
@@ -45,7 +45,7 @@ fun DishShortCard(recipe: Recipe, onClick:()->Unit, navigate:(String)->Unit) {
                 2.dp, Gray, RoundedCornerShape(12.dp)
             )
             .clickable {
-                navigate(Routes.RECIPE)
+                onClick()
             }
     ) {
         Image(
@@ -84,22 +84,23 @@ fun DishShortCard(recipe: Recipe, onClick:()->Unit, navigate:(String)->Unit) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun CheckDishShortCard() {
-    val recipe = Recipe(
-        userId = 1,
-        name = "test",
-        category = "test",
-        img = "",
-        cookTime = 15,
-        portions = 2,
-        calories = 150f,
-        proteins = 10f,
-        fats = 3.5f,
-        carbos = 16f,
-        rec = "test rec",
-        liked = true
-    )
-    DishShortCard(recipe,{}){}
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun CheckDishShortCard() {
+//    val recipe = Recipe(
+//        userUid = "1",
+//        name = "test",
+//        category = "test",
+//        img = "",
+//        cookTime = 15,
+//        portions = 2,
+//        calories = 150f,
+//        proteins = 10f,
+//        fats = 3.5f,
+//        carbos = 16f,
+//        recipeContent = "test rec",
+//        liked = true,
+//        products = List<Product>()
+//    )
+//    DishShortCard(recipe,{}){}
+//}

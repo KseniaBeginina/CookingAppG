@@ -1,9 +1,11 @@
-package com.example.cookingappg
+package com.example.cookingappg.navigation
 
 object Routes {
     //main pages
+    val AUTH = "/auth"
     val LOGIN = "/login"
     val REGISTRATION = "/reg"
+    val MENUDEST = "/memudest"
     val MENU = "/menu"
     //menu pages
     val HOME = "/home"

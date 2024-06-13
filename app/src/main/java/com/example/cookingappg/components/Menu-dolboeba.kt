@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
-import com.example.cookingappg.Routes
+import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.White
 

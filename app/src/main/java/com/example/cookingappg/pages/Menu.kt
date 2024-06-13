@@ -1,9 +1,9 @@
 package com.example.cookingappg.pages
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -12,7 +12,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -23,31 +22,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.cookingappg.NavigationItem
 import com.example.cookingappg.R
-import com.example.cookingappg.Routes
+import com.example.cookingappg.navigation.NavigationItem
+import com.example.cookingappg.navigation.Routes
+import com.example.cookingappg.pages.authentication.AuthViewModel
+import com.example.cookingappg.pages.authentication.Login
+import com.example.cookingappg.pages.authentication.Registration
+import com.example.cookingappg.pages.recipes.AddRecipe
+import com.example.cookingappg.pages.recipes.Filters
+import com.example.cookingappg.pages.recipes.Home
+import com.example.cookingappg.pages.recipes.Recipe
+import com.example.cookingappg.pages.user.Profile
+import com.example.cookingappg.pages.user.ProfileEdit
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.White
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Menu() {
+fun Menu(authVM: AuthViewModel) {
     val bottomNavigationItems = remember {
         listOf(
             NavigationItem(icon = R.drawable.home, title = "Рецепты"),
@@ -63,28 +63,6 @@ fun Menu() {
 
     val navController = rememberNavController()
 
-    val database = Firebase.database.reference
-    val auth = Firebase.auth
-
-    Log.d("Menu","${auth.currentUser?.email}")
-
-    LaunchedEffect(key1 = auth.currentUser) {
-        if (auth.currentUser != null) {
-            val userRef = database.child("User").child(auth.currentUser!!.uid)
-            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (!snapshot.exists()) {
-                        navController.navigate(Routes.LOGIN)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    // Обработка ошибки
-                }
-            })
-        }
-    }
-
     val backstackState = navController.currentBackStackEntryAsState().value
     selectedItem = remember(key1 = backstackState) {
         when(backstackState?.destination?.route) {
@@ -98,7 +76,8 @@ fun Menu() {
     }
 
     val showBottomBar = backstackState?.destination?.route != Routes.LOGIN &&
-            backstackState?.destination?.route != Routes.REGISTRATION
+            backstackState?.destination?.route != Routes.REGISTRATION &&
+            backstackState?.destination?.route != Routes.RECIPE
 
 
     Scaffold (
@@ -117,23 +96,34 @@ fun Menu() {
         }
     ){
         NavHost(navController, Routes.HOME){
+            //recipes
             composable(Routes.HOME){
                 Home(navController::navigate)
             }
+            composable(Routes.FILTERS){
+                Filters(navController::navigate)
+            }
+            composable(Routes.ADD){
+                AddRecipe(navController::navigate)
+            }
+            composable(Routes.RECIPE){
+                Recipe(navController::navigate)
+            }
+
+            //user
             composable(Routes.PROFILE){
                 Profile(navController::navigate)
             }
             composable(Routes.EDITPROF){
                 ProfileEdit(navController::navigate)
             }
-            composable(Routes.FILTERS){
-                Filters(navController::navigate)
-            }
+
+            //authentication
             composable(Routes.LOGIN){
-                Login(navController::navigate)
+                Login(authVM, navController::navigate)
             }
             composable(Routes.REGISTRATION){
-                Registration(navController::navigate)
+                Registration(authVM, navController::navigate)
             }
         }
     }
@@ -158,7 +148,7 @@ fun NavBar(
     onItemClick: (Int) -> Unit
 ) {
     NavigationBar(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().height(72.dp),
         containerColor = White,
         tonalElevation = 10.dp
     ) {

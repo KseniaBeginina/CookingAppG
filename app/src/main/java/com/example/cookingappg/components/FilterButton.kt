@@ -9,7 +9,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.cookingappg.R
-import com.example.cookingappg.Routes
+import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.TextLight
 
 @Composable

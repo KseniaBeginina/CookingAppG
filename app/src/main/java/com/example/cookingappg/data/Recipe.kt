@@ -11,7 +11,7 @@ data class Recipe(
     val proteins: Float,
     val fats: Float,
     val carbos: Float,
-    val rec: String,
+    val recipeContent: String,
     val liked: Boolean,
-    val products: List<Product>
+//    val products: List<Product>
 )

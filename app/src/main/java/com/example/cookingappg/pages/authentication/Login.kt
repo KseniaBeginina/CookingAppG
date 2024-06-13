@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages
+package com.example.cookingappg.pages.authentication
 
 import android.util.Log
 import android.widget.Toast
@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -22,26 +20,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
-import com.example.cookingappg.Routes
 import com.example.cookingappg.components.CustomButton
 import com.example.cookingappg.components.CustomInput
 import com.example.cookingappg.components.CustomTitle
+import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.White
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import javax.annotation.Nonnull
+import retrofit2.HttpException
 
 @Composable
-fun Login(navigate:(String)->Unit) {
+fun Login(authVM: AuthViewModel, navigate:(String)->Unit) {
     val email = remember {
         mutableStateOf("")
     }
@@ -49,7 +42,6 @@ fun Login(navigate:(String)->Unit) {
         mutableStateOf("")
     }
     val context = LocalContext.current
-    val auth = Firebase.auth
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp).background(White),
@@ -66,8 +58,8 @@ fun Login(navigate:(String)->Unit) {
                 modifier = Modifier.size(250.dp)
             )
             CustomTitle("Войти")
-            CustomInput(email, "Email")
-            CustomInput(password, "Пароль")
+            CustomInput(email, "Email", KeyboardType.Email)
+            CustomInput(password, "Пароль", KeyboardType.Password)
         }
 
         Column(
@@ -82,18 +74,31 @@ fun Login(navigate:(String)->Unit) {
                 }else if(password.value.length<6){
                     Toast.makeText(context, "Пароль должен быть не менее 6 символов", Toast.LENGTH_SHORT).show()
                 }else{
-                    auth.signInWithEmailAndPassword(email.value, password.value)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                navigate(Routes.MENU)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Такого аккаунта не существует",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                    try {
+                        authVM.logIn(email.value, password.value)
+                        navigate(Routes.MENU)
+                    } catch (e: HttpException){
+                        if (e.code() == 400){
+                            Toast.makeText(
+                                context,
+                                "Проверьте введенные данные",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Повторите попытку",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+                    }catch (e: Exception){
+                        Log.d("test", e.toString())
+                        Toast.makeText(
+                            context,
+                            "Попробуйте еще раз",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
             Column (
@@ -122,10 +127,10 @@ fun Login(navigate:(String)->Unit) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun LogPrew() {
-    MaterialTheme {
-        Login(){}
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun LogPrew() {
+//    MaterialTheme {
+//        Login(){}
+//    }
+//}

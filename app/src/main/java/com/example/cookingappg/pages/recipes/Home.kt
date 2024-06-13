@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages
+package com.example.cookingappg.pages.recipes
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -10,27 +10,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.cookingappg.DishCard
-import com.example.cookingappg.R
-import com.example.cookingappg.Routes
-import com.example.cookingappg.components.CustomButton
 import com.example.cookingappg.components.CustomTitle
 import com.example.cookingappg.components.DishShortCard
 import com.example.cookingappg.components.DishTypeChoise
 import com.example.cookingappg.components.FilterButton
 import com.example.cookingappg.components.SearchBar
+import com.example.cookingappg.data.Product
+import com.example.cookingappg.data.Recipe
+import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.White
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun Home(navigate:(String)->Unit) {
@@ -72,6 +68,21 @@ fun Home(navigate:(String)->Unit) {
                 DishTypeChoise(text = "ужин") {}
                 DishTypeChoise(text = "бебра") {}
             }
+            val recipe = Recipe(
+                userUid = "1",
+                name = "test",
+                category = "test",
+                img = "",
+                cookTime = 15,
+                portions = 2,
+                calories = 150f,
+                proteins = 10f,
+                fats = 3.5f,
+                carbos = 16f,
+                recipeContent = "test rec",
+                liked = true
+            )
+            DishShortCard(recipe = recipe){navigate(Routes.RECIPE)}
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),

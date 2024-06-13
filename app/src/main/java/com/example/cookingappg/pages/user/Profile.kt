@@ -1,11 +1,8 @@
-package com.example.cookingappg.pages
+package com.example.cookingappg.pages.user
 
 import android.util.Log
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +21,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,54 +36,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
-import com.example.cookingappg.Routes
-import com.example.cookingappg.components.CustomButton
 import com.example.cookingappg.components.CustomTitle
-import com.example.cookingappg.components.DishTypeChoise
-import com.example.cookingappg.components.FilterButton
-import com.example.cookingappg.components.SearchBar
-import com.example.cookingappg.data.User
+import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 
 @Composable
 fun Profile(navigate:(String)->Unit) {
 
-    val database = Firebase.database.reference
-    val auth = Firebase.auth
-    val currentUser = auth.currentUser
-
     var userName by remember {
         mutableStateOf("")
     }
-
-    if (currentUser != null) {
-        val userRef = database.child("User").child(currentUser.uid)
-
-        LaunchedEffect(key1 = currentUser) {
-            userRef.addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        val user = dataSnapshot.getValue(User::class.java)
-                        userName = user?.name ?: "none"
-                    }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // Обработка ошибок
-                }
-            })
-        }
 
         Column(
             modifier = Modifier.fillMaxSize().background(White)
@@ -149,12 +110,12 @@ fun Profile(navigate:(String)->Unit) {
                     IconButton(
                         modifier = Modifier.size(32.dp),
                         onClick = {
-                            FirebaseAuth.getInstance().signOut()
+                            /*logOut*/
                             navigate(Routes.LOGIN)
-                            Log.d("LogOut", "User email: ${auth.currentUser?.email}")
                         }
                     ) {
                         Icon(
+                            modifier = Modifier.size(28.dp),
                             painter = painterResource(id = R.drawable.logout),
                             contentDescription = null,
                             tint = Primary
@@ -228,9 +189,6 @@ fun Profile(navigate:(String)->Unit) {
 //            }
             }
         }
-    } else{
-        navigate(Routes.LOGIN)
-    }
 }
 
 

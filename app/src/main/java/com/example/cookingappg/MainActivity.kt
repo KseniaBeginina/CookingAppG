@@ -3,25 +3,25 @@ package com.example.cookingappg
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.activity.viewModels
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.cookingappg.navigation.NavGraph
 import com.example.cookingappg.ui.theme.CookingAppGTheme
 import com.example.cookingappg.ui.theme.White
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val mainVM by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CookingAppGTheme {
                 Surface (color = White) {
+                    val startDestination = mainVM.startDestination
                     val navController = rememberNavController()
-                    NavGraph(navController = navController)
+                    NavGraph(startDestination, navController = navController)
                 }
             }
         }

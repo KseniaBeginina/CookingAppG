@@ -1,6 +1,7 @@
 package com.example.cookingappg.components
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,10 +26,11 @@ import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun CustomInput (state: MutableState<String>, placeholder:String) {
+fun CustomInput (state: MutableState<String>, placeholder:String, keyboardType: KeyboardType) {
 
     TextField(
         modifier = Modifier.size(width = 343.dp, height = 56.dp),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         singleLine = true,
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = White,

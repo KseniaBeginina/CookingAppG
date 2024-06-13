@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages
+package com.example.cookingappg.pages.recipes
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -16,10 +16,8 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -29,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
-import com.example.cookingappg.Routes
+import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.components.CustomOutlinedInputNumber
 import com.example.cookingappg.components.CustomTitle
 import com.example.cookingappg.components.TwoColorButton
@@ -49,7 +47,8 @@ fun Filters(navigate:(String)->Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row (
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(86.dp)
         ){
             IconButton(
                 modifier = Modifier.size(32.dp),

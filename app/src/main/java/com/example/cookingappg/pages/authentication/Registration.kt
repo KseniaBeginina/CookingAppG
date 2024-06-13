@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages
+package com.example.cookingappg.pages.authentication
 
 import android.util.Log
 import android.widget.Toast
@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,30 +22,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
-import com.example.cookingappg.Routes
 import com.example.cookingappg.components.CustomButton
 import com.example.cookingappg.components.CustomCheckBox
 import com.example.cookingappg.components.CustomInput
 import com.example.cookingappg.components.CustomTitle
-import com.example.cookingappg.data.User
+import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
+import retrofit2.HttpException
 
 @Composable
-fun Registration(navigate:(String)->Unit) {
+fun Registration(authVM: AuthViewModel, navigate:(String)->Unit) {
     val email = remember {
         mutableStateOf("")
     }
@@ -61,8 +52,6 @@ fun Registration(navigate:(String)->Unit) {
         mutableStateOf(false)
     }
     val context = LocalContext.current
-    val auth = Firebase.auth
-    val database = Firebase.database.reference
 
     Column(
         modifier = Modifier
@@ -83,9 +72,9 @@ fun Registration(navigate:(String)->Unit) {
             )
 
             CustomTitle("Создать аккаунт")
-            CustomInput(email, "Email")
-            CustomInput(username, "Имя")
-            CustomInput(password, "Пароль")
+            CustomInput(email, "Email", KeyboardType.Email)
+            CustomInput(username, "Имя", KeyboardType.Text)
+            CustomInput(password, "Пароль", KeyboardType.Password)
 
             Row(
                 modifier = Modifier.width(343.dp),
@@ -155,23 +144,32 @@ fun Registration(navigate:(String)->Unit) {
                 }else if (!check.value){
                     Toast.makeText(context, "Необходимо согласиться", Toast.LENGTH_SHORT).show()
                 }else{
-                   auth.createUserWithEmailAndPassword(email.value, password.value)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val user = User(
-                                    name = username.value,
-                                    email = email.value,
-                                    password = "",
-                                    img = ""
-                                )
-                                database.child("User").child(auth.currentUser!!.uid)
-                                    .setValue(user)
-                                navigate(Routes.MENU)
-                            } else {
-                                Toast.makeText(context, "Ошибка регистрации", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
+                    try {
+                        authVM.signUp(email.value, username.value, password.value)
+                        navigate(Routes.MENU)
+                    }catch (e: HttpException){
+                        if (e.code() == 400){
+                            Toast.makeText(
+                                context,
+                                "Проверьте введенные данные",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Повторите попытку",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
+                    }catch (e: Exception){
+                        Log.d("test", e.toString())
+                        Toast.makeText(
+                            context,
+                            "Попробуйте еще раз",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
                 }
             }
             Row (
@@ -195,11 +193,11 @@ fun Registration(navigate:(String)->Unit) {
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable
-fun RegPrew() {
-    MaterialTheme {
-        Registration(){}
-    }
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun RegPrew() {
+//    MaterialTheme {
+//        Registration(){}
+//    }
+//}
