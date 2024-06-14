@@ -20,4 +20,5 @@ object Routes {
     val FAMILY = "/family"
     val SETTINGS = "/settings"
     val EDITPROF = "/editProf"
+    val CAMERA = "/camera"
 }

@@ -21,12 +21,18 @@ class MainViewModel @Inject constructor(
     var startDestination by mutableStateOf(Routes.AUTH)
 
     init {
-        localManager.readAppEntry().onEach { shouldStartFromHomeScreen ->
-            startDestination = if (shouldStartFromHomeScreen) {
-                Routes.MENUDEST
-            } else {
-                Routes.AUTH
-            }
-        }.launchIn(viewModelScope)
+//        localManager.readAppEntry().onEach { shouldStartFromHomeScreen ->
+//            startDestination = if (shouldStartFromHomeScreen) {
+//                Routes.MENUDEST
+//            } else {
+//                Routes.AUTH
+//            }
+//        }.launchIn(viewModelScope)
+        val id = prefs.getLong("userId", 0)
+        startDestination = if (id == 0L) {
+            Routes.AUTH
+        } else {
+            Routes.MENUDEST
+        }
     }
 }

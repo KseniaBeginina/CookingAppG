@@ -1,5 +1,8 @@
 package com.example.cookingappg.presentation.pages.user
 
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,12 +21,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -32,6 +37,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.cookingappg.R
 import com.example.cookingappg.presentation.components.CustomButton
 import com.example.cookingappg.presentation.components.CustomOutlinedInputText
@@ -43,13 +52,20 @@ import com.example.cookingappg.ui.theme.White
 import com.example.cookingappg.ui.theme.White60
 
 @Composable
-fun ProfileEdit(navigate:(String)->Unit) {
+fun ProfileEdit(profileVM: ProfileViewModel, navigate:(String)->Unit) {
+
+    val userData = profileVM.getUserData()
+    val context = LocalContext.current
+
+    val image by remember {
+        mutableStateOf(userData.image)
+    }
 
     val userName = remember {
-        mutableStateOf("")
+        mutableStateOf(userData.name)
     }
     val email = remember {
-        mutableStateOf("")
+        mutableStateOf(userData.email)
     }
     val password = remember {
         mutableStateOf("")
@@ -101,16 +117,19 @@ fun ProfileEdit(navigate:(String)->Unit) {
                 modifier = Modifier
                     .size(120.dp)
                     .clickable {
+                        onClickEditAvatar(context)
+                        navigate(Routes.CAMERA)
                         Log.d("EditImg", "tap")
                     }
             ) {
-                Image(
+                AsyncImage(
                     modifier = Modifier
                         .size(120.dp)
                         .clip(CircleShape),
-                    painter = painterResource(id = R.drawable.humster),
+                    model = ImageRequest.Builder(context).data(image).build(),
                     contentScale = ContentScale.Crop,
-                    contentDescription = null
+                    contentDescription = null,
+                    error = painterResource(id = R.drawable.humster)
                 )
                 Box(
                     modifier = Modifier
@@ -153,12 +172,16 @@ fun ProfileEdit(navigate:(String)->Unit) {
                     keyboardType = KeyboardType.Text,
                     onValueChange = { userName.value = it }
                 )
-//                CustomOutlinedInputText(
-//                    state = email,
-//                    label = "Email",
-//                    suffix = email.value,
-//                    onValueChange = { email.value = it }
-//                )
+                CustomOutlinedInputText(
+                    state = email,
+                    label = "Email",
+                    suffix = email.value,
+                    width = 340.dp,
+                    height = 50.dp,
+                    single = true,
+                    keyboardType = KeyboardType.Email,
+                    onValueChange = { email.value = it }
+                )
                 CustomOutlinedInputText(
                     state = password,
                     label = "Старый пароль",
@@ -182,6 +205,12 @@ fun ProfileEdit(navigate:(String)->Unit) {
             }
 
             CustomButton(text = "Сохранить изменения") {
+                profileVM.updateUserData(
+                    name = userName.value,
+                    email = email.value,
+                    oldPassword = password.value,
+                    newPassword = newPassword.value
+                )
                 Log.d("Save", "tap")
             }
 
@@ -199,10 +228,33 @@ fun ProfileEdit(navigate:(String)->Unit) {
     }
 }
 
-
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileEditPrew() {
-    ProfileEdit(){}
+private fun onClickEditAvatar(context: Context) {
+    if (!hasRequiredPermissions(context)) {
+        ActivityCompat.requestPermissions(
+            context as Activity, Permissions.CAMERAX_PERMISSIONS, 0
+        )
+    }
 }
+
+private fun hasRequiredPermissions(context: Context): Boolean {
+    return Permissions.CAMERAX_PERMISSIONS.all {
+        ContextCompat.checkSelfPermission(
+            context,
+            it
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+}
+
+object Permissions {
+    val CAMERAX_PERMISSIONS = arrayOf(
+        android.Manifest.permission.CAMERA
+    )
+}
+
+
+
+//@Preview(showBackground = true)
+//@Composable
+//fun ProfileEditPrew() {
+//    ProfileEdit(){}
+//}

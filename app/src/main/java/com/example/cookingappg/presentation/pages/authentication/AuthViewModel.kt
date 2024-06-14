@@ -31,6 +31,7 @@ data class AuthViewModel @Inject constructor(
                     )
                 )
                 prefs.edit().putLong("userId",response!!.id).apply()
+                prefs.edit().putString("password", password).apply()
             } catch (e: Exception){
                 error = e
             }
@@ -55,6 +56,7 @@ data class AuthViewModel @Inject constructor(
                     )
                 )
                 prefs.edit().putLong("userId", response!!.id).apply()
+                prefs.edit().putString("password", password).apply()
             } catch (e: Exception){
                 error = e
             }

@@ -38,6 +38,7 @@ import com.example.cookingappg.presentation.pages.recipes.AddRecipe
 import com.example.cookingappg.presentation.pages.recipes.Filters
 import com.example.cookingappg.presentation.pages.recipes.Home
 import com.example.cookingappg.presentation.pages.recipes.Recipe
+import com.example.cookingappg.presentation.pages.user.CameraScreen
 import com.example.cookingappg.presentation.pages.user.Profile
 import com.example.cookingappg.presentation.pages.user.ProfileEdit
 import com.example.cookingappg.presentation.pages.user.ProfileViewModel
@@ -77,7 +78,8 @@ fun Menu(mainNavController: NavController) {
 
     val showBottomBar = backstackState?.destination?.route != Routes.LOGIN &&
             backstackState?.destination?.route != Routes.REGISTRATION &&
-            backstackState?.destination?.route != Routes.RECIPE
+            backstackState?.destination?.route != Routes.RECIPE &&
+            backstackState?.destination?.route != Routes.CAMERA
 
 
     Scaffold (
@@ -112,12 +114,16 @@ fun Menu(mainNavController: NavController) {
 
             //user
             composable(Routes.PROFILE){
-                val mainVM = hiltViewModel<MainViewModel>()
                 val profileVM = hiltViewModel<ProfileViewModel>()
-                Profile(profileVM, mainVM, mainNavController)
+                Profile(profileVM, mainNavController, navController)
             }
             composable(Routes.EDITPROF){
-                ProfileEdit(navController::navigate)
+                val profileVM = hiltViewModel<ProfileViewModel>()
+                ProfileEdit(profileVM, navController::navigate)
+            }
+            composable(Routes.CAMERA){
+                val profileVM = hiltViewModel<ProfileViewModel>()
+                CameraScreen(profileVM = profileVM, navController = navController)
             }
         }
     }
