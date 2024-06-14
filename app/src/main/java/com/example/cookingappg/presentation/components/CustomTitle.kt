@@ -1,4 +1,4 @@
-package com.example.cookingappg.components
+package com.example.cookingappg.presentation.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentWidth

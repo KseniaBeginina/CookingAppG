@@ -1,4 +1,4 @@
-package com.example.cookingappg.components
+package com.example.cookingappg.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

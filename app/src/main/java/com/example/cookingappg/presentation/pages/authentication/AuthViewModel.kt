@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages.authentication
+package com.example.cookingappg.presentation.pages.authentication
 
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel

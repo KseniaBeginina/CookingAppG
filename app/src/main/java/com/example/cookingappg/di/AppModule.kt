@@ -3,7 +3,9 @@ package com.example.cookingappg.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.UserManager
 import com.example.cookingappg.data.api.UserApi
+import com.example.cookingappg.data.local_manager.LocalManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,4 +33,10 @@ object AppModule {
     fun provideSharedPref(app: Application): SharedPreferences {
         return app.getSharedPreferences("prefs", Context.MODE_PRIVATE)
     }
+
+    @Provides
+    @Singleton
+    fun provideLocalUserManager(
+        application: Application
+    ) : LocalManager = LocalManager(application)
 }

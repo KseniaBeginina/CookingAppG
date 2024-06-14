@@ -1,4 +1,4 @@
-package com.example.cookingappg.components
+package com.example.cookingappg.presentation.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.interaction.MutableInteractionSource

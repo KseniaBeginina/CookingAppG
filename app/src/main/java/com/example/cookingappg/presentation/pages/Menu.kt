@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages
+package com.example.cookingappg.presentation.pages
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
@@ -24,30 +24,30 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.cookingappg.MainViewModel
 import com.example.cookingappg.R
 import com.example.cookingappg.navigation.NavigationItem
 import com.example.cookingappg.navigation.Routes
-import com.example.cookingappg.pages.authentication.AuthViewModel
-import com.example.cookingappg.pages.authentication.Login
-import com.example.cookingappg.pages.authentication.Registration
-import com.example.cookingappg.pages.recipes.AddRecipe
-import com.example.cookingappg.pages.recipes.Filters
-import com.example.cookingappg.pages.recipes.Home
-import com.example.cookingappg.pages.recipes.Recipe
-import com.example.cookingappg.pages.user.Profile
-import com.example.cookingappg.pages.user.ProfileEdit
+import com.example.cookingappg.presentation.pages.recipes.AddRecipe
+import com.example.cookingappg.presentation.pages.recipes.Filters
+import com.example.cookingappg.presentation.pages.recipes.Home
+import com.example.cookingappg.presentation.pages.recipes.Recipe
+import com.example.cookingappg.presentation.pages.user.Profile
+import com.example.cookingappg.presentation.pages.user.ProfileEdit
+import com.example.cookingappg.presentation.pages.user.ProfileViewModel
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.White
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Menu(authVM: AuthViewModel) {
+fun Menu(mainNavController: NavController) {
     val bottomNavigationItems = remember {
         listOf(
             NavigationItem(icon = R.drawable.home, title = "Рецепты"),
@@ -95,7 +95,7 @@ fun Menu(authVM: AuthViewModel) {
             }
         }
     ){
-        NavHost(navController, Routes.HOME){
+        NavHost(navController, startDestination = Routes.HOME){
             //recipes
             composable(Routes.HOME){
                 Home(navController::navigate)
@@ -112,18 +112,12 @@ fun Menu(authVM: AuthViewModel) {
 
             //user
             composable(Routes.PROFILE){
-                Profile(navController::navigate)
+                val mainVM = hiltViewModel<MainViewModel>()
+                val profileVM = hiltViewModel<ProfileViewModel>()
+                Profile(profileVM, mainVM, mainNavController)
             }
             composable(Routes.EDITPROF){
                 ProfileEdit(navController::navigate)
-            }
-
-            //authentication
-            composable(Routes.LOGIN){
-                Login(authVM, navController::navigate)
-            }
-            composable(Routes.REGISTRATION){
-                Registration(authVM, navController::navigate)
             }
         }
     }
@@ -148,7 +142,9 @@ fun NavBar(
     onItemClick: (Int) -> Unit
 ) {
     NavigationBar(
-        modifier = Modifier.fillMaxWidth().height(72.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(72.dp),
         containerColor = White,
         tonalElevation = 10.dp
     ) {

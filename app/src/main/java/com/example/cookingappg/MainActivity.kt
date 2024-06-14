@@ -20,8 +20,7 @@ class MainActivity : ComponentActivity() {
             CookingAppGTheme {
                 Surface (color = White) {
                     val startDestination = mainVM.startDestination
-                    val navController = rememberNavController()
-                    NavGraph(startDestination, navController = navController)
+                    NavGraph(startDestination)
                 }
             }
         }

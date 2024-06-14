@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages.user
+package com.example.cookingappg.presentation.pages.user
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -35,8 +35,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.cookingappg.MainViewModel
 import com.example.cookingappg.R
-import com.example.cookingappg.components.CustomTitle
+import com.example.cookingappg.presentation.components.CustomTitle
 import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.TextDark
@@ -44,7 +46,7 @@ import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun Profile(navigate:(String)->Unit) {
+fun Profile(profileVM: ProfileViewModel, mainVM: MainViewModel, navController: NavController) {
 
     var userName by remember {
         mutableStateOf("")
@@ -68,7 +70,7 @@ fun Profile(navigate:(String)->Unit) {
                     IconButton(
                         modifier = Modifier.size(32.dp),
                         onClick = {
-                            navigate(Routes.SETTINGS)
+                            navController.navigate(Routes.SETTINGS)
                             Log.d("Settings", "tap")
                         }
                     ) {
@@ -78,21 +80,17 @@ fun Profile(navigate:(String)->Unit) {
                             tint = Primary
                         )
                     }
-
                     Spacer(
                         modifier = Modifier.width(86.dp)
                     )
-
                     CustomTitle("Профиль")
-
                     Spacer(
                         modifier = Modifier.width(42.dp)
                     )
-
                     IconButton(
                         modifier = Modifier.size(32.dp),
                         onClick = {
-                            navigate(Routes.EDITPROF)
+                            navController.navigate(Routes.EDITPROF)
                             Log.d("EditProfile", "tap")
                         }
                     ) {
@@ -102,16 +100,16 @@ fun Profile(navigate:(String)->Unit) {
                             tint = Primary
                         )
                     }
-
                     Spacer(
                         modifier = Modifier.width(12.dp)
                     )
-
                     IconButton(
                         modifier = Modifier.size(32.dp),
                         onClick = {
-                            /*logOut*/
-                            navigate(Routes.LOGIN)
+                            profileVM.logOut()
+                            navController.navigate(Routes.AUTH)
+//                            navController.popBackStack(Routes.MENUDEST, true)
+//                            navController.navigate(Routes.AUTH)
                         }
                     ) {
                         Icon(
@@ -192,11 +190,11 @@ fun Profile(navigate:(String)->Unit) {
 }
 
 
-
-@Preview(showBackground = true)
-@Composable
-fun ProfilePrew() {
-    MaterialTheme {
-        Profile(){}
-    }
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun ProfilePrew() {
+//    MaterialTheme {
+//        Profile(){}
+//    }
+//}

@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages.recipes
+package com.example.cookingappg.presentation.pages.recipes
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -39,9 +39,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
-import com.example.cookingappg.components.CustomButton
-import com.example.cookingappg.components.CustomOutlinedInputText
-import com.example.cookingappg.components.CustomTitle
+import com.example.cookingappg.presentation.components.CustomButton
+import com.example.cookingappg.presentation.components.CustomOutlinedInputText
+import com.example.cookingappg.presentation.components.CustomTitle
 import com.example.cookingappg.data.Product
 import com.example.cookingappg.ui.theme.Green
 import com.example.cookingappg.ui.theme.Primary

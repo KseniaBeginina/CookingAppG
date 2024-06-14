@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages.user
+package com.example.cookingappg.presentation.pages.user
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -33,9 +33,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
-import com.example.cookingappg.components.CustomButton
-import com.example.cookingappg.components.CustomOutlinedInputText
-import com.example.cookingappg.components.CustomTitle
+import com.example.cookingappg.presentation.components.CustomButton
+import com.example.cookingappg.presentation.components.CustomOutlinedInputText
+import com.example.cookingappg.presentation.components.CustomTitle
 import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight

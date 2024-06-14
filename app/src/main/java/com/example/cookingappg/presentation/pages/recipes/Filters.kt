@@ -1,4 +1,4 @@
-package com.example.cookingappg.pages.recipes
+package com.example.cookingappg.presentation.pages.recipes
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -28,9 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cookingappg.R
 import com.example.cookingappg.navigation.Routes
-import com.example.cookingappg.components.CustomOutlinedInputNumber
-import com.example.cookingappg.components.CustomTitle
-import com.example.cookingappg.components.TwoColorButton
+import com.example.cookingappg.presentation.components.CustomOutlinedInputNumber
+import com.example.cookingappg.presentation.components.CustomTitle
+import com.example.cookingappg.presentation.components.TwoColorButton
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.Simple
 import com.example.cookingappg.ui.theme.TextDark

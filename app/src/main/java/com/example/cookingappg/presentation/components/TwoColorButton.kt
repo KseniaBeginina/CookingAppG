@@ -1,4 +1,4 @@
-package com.example.cookingappg.components
+package com.example.cookingappg.presentation.components
 
 import android.util.Log
 import androidx.compose.foundation.layout.height
