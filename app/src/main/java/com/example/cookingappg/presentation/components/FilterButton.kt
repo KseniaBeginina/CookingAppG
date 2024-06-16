@@ -13,12 +13,12 @@ import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.ui.theme.TextLight
 
 @Composable
-fun FilterButton(navigate:(String)->Unit) {
+fun FilterButton(onClick:()->Unit) {
 
     IconButton(
         modifier = Modifier.size(42.dp),
         onClick = {
-            navigate(Routes.FILTERS)
+            onClick()
         }
     ) {
         Icon(

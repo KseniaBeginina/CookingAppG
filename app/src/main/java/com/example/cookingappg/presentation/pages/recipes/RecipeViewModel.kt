@@ -78,6 +78,7 @@ class RecipeViewModel @Inject constructor(
         var recipes: List<RecipePreview>
         runBlocking {
             recipes = recipeApi.getWithFilters(
+                id = prefs.getLong("userId", 0),
                 query = query,
                 categories = categories,
                 liked = liked,

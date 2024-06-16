@@ -32,6 +32,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.cookingappg.R
 import com.example.cookingappg.data.Recipe
+import com.example.cookingappg.data.RecipePreview
 import com.example.cookingappg.navigation.NavigationItem
 import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.presentation.pages.recipes.AddRecipe
@@ -106,11 +107,24 @@ fun Menu(mainNavController: NavController) {
         NavHost(navController, startDestination = Routes.HOME){
             //recipes
             composable(Routes.HOME){
-                val recipePrew = recipeVM.getRecipePreview()
+                val likedGet = navController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("liked")
+                val fromGet = navController.previousBackStackEntry?.savedStateHandle?.get<String>("from")
+                val toGet = navController.previousBackStackEntry?.savedStateHandle?.get<String>("to")
+                val recipePrew: List<RecipePreview> = if (likedGet != null && fromGet != null && toGet != null) {
+                    recipeVM.getWithFilters(
+                        query = "",
+                        categories = listOf(),
+                        liked = likedGet,
+                        minTime = fromGet.toInt(),
+                        maxTime = toGet.toInt()
+                    )
+                } else {
+                    recipeVM.getRecipePreview()
+                }
                 Home(recipeVM, recipePrew, navController)
             }
             composable(Routes.FILTERS){
-                Filters(navController::navigate)
+                Filters(navController)
             }
             composable(Routes.ADD){
                 AddRecipe(recipeVM, navController)
@@ -127,11 +141,6 @@ fun Menu(mainNavController: NavController) {
                         val recipeDet = recipeVM.getRecipeDetails(it)
                         Recipe(recipeDet, recipeVM, navController)
                     }
-
-//                navController.previousBackStackEntry?.savedStateHandle?.get<Recipe?>("recipe")
-//                    ?.let { recipe ->
-//
-//                    }
             }
             composable(Routes.CAMERAREC){
                 CameraScreenRecipe(recipeVM = recipeVM, navController = navController)

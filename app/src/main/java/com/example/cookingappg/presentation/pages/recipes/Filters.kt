@@ -1,5 +1,6 @@
 package com.example.cookingappg.presentation.pages.recipes
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.cookingappg.R
 import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.presentation.components.CustomOutlinedInputNumber
@@ -36,8 +38,28 @@ import com.example.cookingappg.ui.theme.Simple
 import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.White
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
-fun Filters(navigate:(String)->Unit) {
+fun Filters(navController: NavController) {
+
+    val likedGet = navController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("liked")
+    val fromGet = navController.previousBackStackEntry?.savedStateHandle?.get<String>("from")
+    val toGet = navController.previousBackStackEntry?.savedStateHandle?.get<String>("to")
+
+    val liked = remember {
+        mutableStateOf(likedGet ?: false)
+    }
+
+    val sliderPosition = remember{
+        mutableStateOf(0f..90f)
+    }
+    val from = remember {
+        mutableStateOf(fromGet ?: "0")
+    }
+    val to = remember {
+        mutableStateOf(toGet?: "90")
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -53,7 +75,10 @@ fun Filters(navigate:(String)->Unit) {
             IconButton(
                 modifier = Modifier.size(32.dp),
                 onClick = {
-                    navigate(Routes.HOME)
+                    navController.currentBackStackEntry?.savedStateHandle?.set("liked", liked.value)
+                    navController.currentBackStackEntry?.savedStateHandle?.set("from", from.value)
+                    navController.currentBackStackEntry?.savedStateHandle?.set("to", to.value)
+                    navController.navigate(Routes.HOME)
                 }
             ){
                 Icon(
@@ -78,7 +103,12 @@ fun Filters(navigate:(String)->Unit) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            TwoColorButton("Избранное") {}
+            TwoColorButton(
+                text = "Избранное",
+                selected = liked
+            ) {
+                liked.value = !liked.value
+            }
 //            TwoColorButton("Мои рецепты") {}
         }
 
@@ -92,16 +122,6 @@ fun Filters(navigate:(String)->Unit) {
                 fontFamily = FontFamily(Font(R.font.montserratsemibold)),
                 color = TextDark
             )
-
-            val sliderPosition = remember{
-                mutableStateOf(0f..90f)
-            }
-            val from = remember {
-                mutableStateOf("0")
-            }
-            val to = remember {
-                mutableStateOf("90")
-            }
 
             LaunchedEffect(key1 = from.value, key2 = to.value) {
                 if (from.value.isNotEmpty() && to.value.isNotEmpty()) {
@@ -141,8 +161,8 @@ fun Filters(navigate:(String)->Unit) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun CheckFilters() {
-    Filters (){}
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun CheckFilters() {
+//    Filters (){}
+//}

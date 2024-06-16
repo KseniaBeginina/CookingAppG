@@ -36,7 +36,7 @@ import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
 
 @Composable
-fun SearchBar (state: MutableState<String>) {
+fun SearchBar (state: MutableState<String>, onChange:(String) -> Unit) {
 
     var iconTint by remember {
         mutableStateOf(TextLight)
@@ -44,7 +44,7 @@ fun SearchBar (state: MutableState<String>) {
 
     BasicTextField(
         value = state.value,
-        onValueChange = { state.value = it },
+        onValueChange = { onChange(it) },
         textStyle = TextStyle(
             fontSize = 16.sp,
             fontFamily = FontFamily(Font(R.font.montserratmedium)),

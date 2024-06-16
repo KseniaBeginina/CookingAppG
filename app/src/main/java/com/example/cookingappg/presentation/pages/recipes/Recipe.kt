@@ -135,7 +135,6 @@ fun Recipe(recipe: Recipe, recipeVM: RecipeViewModel, navController: NavControll
                     modifier = Modifier.size(32.dp),
                     onClick = {
                         try {
-                            //navController.previousBackStackEntry?.savedStateHandle?.remove<Long?>("recipeId")
                             navController.navigateUp()
                         }
                         catch (e: Exception) {

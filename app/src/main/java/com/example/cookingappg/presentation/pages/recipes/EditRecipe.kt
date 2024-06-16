@@ -205,7 +205,7 @@ fun EditRecipe(recipe: Recipe, recipeVM: RecipeViewModel, navController: NavCont
 
                 val selectedStates = remember {
                     mutableListOf(
-                        mutableStateOf(true),
+                        mutableStateOf(false),
                         mutableStateOf(false),
                         mutableStateOf(false),
                         mutableStateOf(false),
@@ -213,6 +213,11 @@ fun EditRecipe(recipe: Recipe, recipeVM: RecipeViewModel, navController: NavCont
                         mutableStateOf(false),
                         mutableStateOf(false)
                     )
+                }
+                for (i in categories.indices) {
+                    if (categories[i] == category.value) {
+                        selectedStates[i].value = true
+                    }
                 }
 
                 Row(

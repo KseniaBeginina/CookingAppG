@@ -24,6 +24,7 @@ interface RecipeApi {
 
     @GET("filter")
     suspend fun getWithFilters(
+        @Query("userId") id: Long,
         @Query("query") query: String,
         @Query("categories") categories: List<String>,
         @Query("likedOnly") liked: Boolean,

@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -43,8 +45,28 @@ import com.example.cookingappg.ui.theme.White
 @Composable
 fun Home(recipeVM: RecipeViewModel, recipes: List<RecipePreview>, navController: NavController) {
 
-    val text = remember {
+    val likedGet = navController.previousBackStackEntry?.savedStateHandle?.get<Boolean>("liked")
+    val fromGet = navController.previousBackStackEntry?.savedStateHandle?.get<String>("from")
+    val toGet = navController.previousBackStackEntry?.savedStateHandle?.get<String>("to")
+
+    val query = remember {
         mutableStateOf("")
+    }
+    val categoriesQ = remember {
+        mutableStateListOf<String>()
+    }
+    val liked = remember {
+        mutableStateOf(likedGet?:false)
+    }
+    val from = remember {
+        mutableStateOf(fromGet?:"0")
+    }
+    val to = remember {
+        mutableStateOf(toGet?:"90")
+    }
+
+    val recipesRez = remember {
+        mutableStateOf(recipes)
     }
 
     Column (
@@ -66,8 +88,21 @@ fun Home(recipeVM: RecipeViewModel, recipes: List<RecipePreview>, navController:
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                SearchBar(state = text)
-                FilterButton(navController::navigate)
+                SearchBar(
+                    state = query,
+                    onChange = {
+                        query.value = it
+                        recipesRez.value = recipeVM.getWithFilters(
+                            query.value, categoriesQ, liked.value, from.value.toInt(), to.value.toInt()
+                        )
+                    }
+                )
+                FilterButton{
+                    navController.currentBackStackEntry?.savedStateHandle?.set("liked", liked.value)
+                    navController.currentBackStackEntry?.savedStateHandle?.set("from", from.value)
+                    navController.currentBackStackEntry?.savedStateHandle?.set("to", to.value)
+                    navController.navigate(Routes.FILTERS)
+                }
             }
 
             val categories = listOf(
@@ -99,6 +134,14 @@ fun Home(recipeVM: RecipeViewModel, recipes: List<RecipePreview>, navController:
                             selected = selectedStates[index]
                         ){
                             selectedStates[index].value = !selectedStates[index].value
+                            if (selectedStates[index].value){
+                                categoriesQ.add(cat)
+                            } else {
+                                categoriesQ.remove(cat)
+                            }
+                            recipesRez.value = recipeVM.getWithFilters(
+                                query.value, categoriesQ, liked.value, from.value.toInt(), to.value.toInt()
+                            )
                         }
                     }
             }
@@ -109,9 +152,10 @@ fun Home(recipeVM: RecipeViewModel, recipes: List<RecipePreview>, navController:
                     .wrapContentHeight(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ){
-                if(recipes.isEmpty()){
+                if(recipesRez.value.isEmpty()){
                     Column (
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .wrapContentHeight(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ){
@@ -139,7 +183,7 @@ fun Home(recipeVM: RecipeViewModel, recipes: List<RecipePreview>, navController:
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ){
-                    recipes.forEach{recipe ->
+                    recipesRez.value.forEach{recipe ->
                         DishShortCard(recipePrew = recipe, recipeVM = recipeVM) {
                             val recipeDetails = recipeVM.getRecipeDetails(recipe.id)
                             navController.currentBackStackEntry?.savedStateHandle?.set("recipe", recipeDetails)
