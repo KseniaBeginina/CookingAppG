@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.UserManager
+import com.example.cookingappg.data.api.RecipeApi
 import com.example.cookingappg.data.api.UserApi
 import com.example.cookingappg.data.local_manager.LocalManager
 import dagger.Module
@@ -39,4 +40,14 @@ object AppModule {
     fun provideLocalUserManager(
         application: Application
     ) : LocalManager = LocalManager(application)
+
+    @Provides
+    @Singleton
+    fun provideRecipeApi(): RecipeApi {
+        return Retrofit.Builder()
+            .baseUrl("http:10.0.2.2:8080/api/v1/recipes/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create()
+    }
 }

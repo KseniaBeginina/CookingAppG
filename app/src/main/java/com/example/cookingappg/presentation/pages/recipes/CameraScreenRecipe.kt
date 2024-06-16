@@ -1,0 +1,221 @@
+package com.example.cookingappg.presentation.pages.recipes
+
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.graphics.Matrix
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.core.CameraControl
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.ImageProxy
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cameraswitch
+import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import com.example.cookingappg.navigation.Routes
+import com.example.cookingappg.presentation.pages.CameraPreview
+import com.example.cookingappg.ui.theme.Primary
+import com.example.cookingappg.ui.theme.White
+
+@Composable
+fun CameraScreenRecipe(
+    recipeVM: RecipeViewModel,
+    navController: NavController
+) {
+
+    val recipeId = navController.previousBackStackEntry?.savedStateHandle?.get<Long?>("recipeId")
+    val context = LocalContext.current
+
+    val controller = remember {
+        LifecycleCameraController(context).apply {
+            setEnabledUseCases(CameraController.IMAGE_CAPTURE)
+            cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+        }
+    }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val bitmap = recipeVM.bitmap.collectAsState()
+
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri: Uri? ->
+            imageUri = uri
+        }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        imageUri?.let {
+            val source = ImageDecoder.createSource(context.contentResolver, it)
+            if (navController.previousBackStackEntry?.destination?.route == Routes.EDIT) {
+                recipeVM.onTakePhotoUpdate(recipeId!!, context, ImageDecoder.decodeBitmap(source))
+            }
+            else {
+                recipeVM.onTakePhoto(context, ImageDecoder.decodeBitmap(source))
+            }
+        }
+        if (bitmap.value != null) {
+            Image(
+                bitmap = bitmap.value!!.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize()
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Primary,
+                        contentColor = White
+                    ),
+                    onClick = { navController.navigateUp() }
+                ) {
+                    Text(text = "Сохранить")
+                }
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Primary,
+                        contentColor = White
+                    ),
+                    onClick = { recipeVM.onTakePhoto(context, null) }
+                ) {
+                    Text(text = "Назад")
+                }
+            }
+        }
+        else {
+            CameraPreview(
+                controller = controller,
+                modifier = Modifier.fillMaxSize()
+            )
+
+            IconButton(
+                onClick = {
+                    controller.cameraSelector =
+                        if (controller.cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+                            CameraSelector.DEFAULT_FRONT_CAMERA
+                        } else CameraSelector.DEFAULT_BACK_CAMERA
+                },
+                modifier = Modifier.offset(16.dp, 16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Cameraswitch,
+                    tint = White,
+                    contentDescription = "Повернуть камеру"
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
+                IconButton(
+                    onClick = {
+                        launcher.launch("image/*")
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Photo,
+                        tint = White,
+                        contentDescription = "Галерея"
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        val onPhotoTaken = if (navController.previousBackStackEntry?.destination?.route == Routes.ADD)
+                            recipeVM::onTakePhoto
+                            else {con, bit -> recipeVM.onTakePhotoUpdate(recipeId, con, bit)}
+
+                        takePhoto(
+                            controller = controller,
+                            onPhotoTaken = onPhotoTaken,
+                            context = context
+                        )
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PhotoCamera,
+                        tint = White,
+                        contentDescription = "Сделать фото"
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun takePhoto(
+    controller: LifecycleCameraController,
+    onPhotoTaken: (Context, Bitmap) -> Unit,
+    context: Context
+) {
+    controller.takePicture(
+        ContextCompat.getMainExecutor(context),
+        object : ImageCapture.OnImageCapturedCallback() {
+            override fun onCaptureSuccess(image: ImageProxy) {
+                super.onCaptureSuccess(image)
+
+                val matrix = Matrix().apply {
+                    postRotate(image.imageInfo.rotationDegrees.toFloat())
+                }
+                val rotatedBitmap = Bitmap.createBitmap(
+                    image.toBitmap(),
+                    0,
+                    0,
+                    image.width,
+                    image.height,
+                    matrix,
+                    true
+                )
+                onPhotoTaken(context, rotatedBitmap)
+                image.close()
+            }
+
+            override fun onError(exception: ImageCaptureException) {
+                super.onError(exception)
+                Log.e("Camera", "Couldn't take photo:", exception)
+            }
+
+        }
+    )
+}

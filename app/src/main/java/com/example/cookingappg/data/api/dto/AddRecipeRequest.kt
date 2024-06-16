@@ -1,14 +1,11 @@
-package com.example.cookingappg.data
+package com.example.cookingappg.data.api.dto
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.example.cookingappg.data.Product
 
-@Parcelize
-data class Recipe(
+data class AddRecipeRequest(
     val userId: Long,
     val name: String,
     val category: String,
-    val image: String,
     val cookTime: Int,
     val portions: Int,
     val calories: Float,
@@ -18,4 +15,4 @@ data class Recipe(
     val recipeContent: String,
     val liked: Boolean,
     val products: List<Product>
-) : Parcelable
+)

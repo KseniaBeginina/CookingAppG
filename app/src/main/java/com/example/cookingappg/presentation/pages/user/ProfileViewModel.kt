@@ -73,7 +73,7 @@ class ProfileViewModel @Inject constructor(
 
     fun updateUserImage(image: Bitmap, context: Context): String{
         var avatar: String = ""
-        viewModelScope.launch {
+        runBlocking {
             val userId = prefs.getLong("userId", 0)
 
             //Создаем пустой файл

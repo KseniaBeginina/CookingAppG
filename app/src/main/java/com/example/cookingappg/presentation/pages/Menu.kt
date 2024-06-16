@@ -30,15 +30,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.cookingappg.MainViewModel
 import com.example.cookingappg.R
+import com.example.cookingappg.data.Recipe
 import com.example.cookingappg.navigation.NavigationItem
 import com.example.cookingappg.navigation.Routes
 import com.example.cookingappg.presentation.pages.recipes.AddRecipe
+import com.example.cookingappg.presentation.pages.recipes.CameraScreenRecipe
+import com.example.cookingappg.presentation.pages.recipes.EditRecipe
 import com.example.cookingappg.presentation.pages.recipes.Filters
 import com.example.cookingappg.presentation.pages.recipes.Home
 import com.example.cookingappg.presentation.pages.recipes.Recipe
-import com.example.cookingappg.presentation.pages.user.CameraScreen
+import com.example.cookingappg.presentation.pages.recipes.RecipeViewModel
+import com.example.cookingappg.presentation.pages.user.CameraScreenProfile
 import com.example.cookingappg.presentation.pages.user.Profile
 import com.example.cookingappg.presentation.pages.user.ProfileEdit
 import com.example.cookingappg.presentation.pages.user.ProfileViewModel
@@ -79,8 +82,11 @@ fun Menu(mainNavController: NavController) {
     val showBottomBar = backstackState?.destination?.route != Routes.LOGIN &&
             backstackState?.destination?.route != Routes.REGISTRATION &&
             backstackState?.destination?.route != Routes.RECIPE &&
-            backstackState?.destination?.route != Routes.CAMERA
+            backstackState?.destination?.route != Routes.CAMERAPROF&&
+            backstackState?.destination?.route != Routes.CAMERAREC
 
+
+    val recipeVM = hiltViewModel<RecipeViewModel>()
 
     Scaffold (
         bottomBar = {
@@ -100,16 +106,35 @@ fun Menu(mainNavController: NavController) {
         NavHost(navController, startDestination = Routes.HOME){
             //recipes
             composable(Routes.HOME){
-                Home(navController::navigate)
+                val recipePrew = recipeVM.getRecipePreview()
+                Home(recipeVM, recipePrew, navController)
             }
             composable(Routes.FILTERS){
                 Filters(navController::navigate)
             }
             composable(Routes.ADD){
-                AddRecipe(navController::navigate)
+                AddRecipe(recipeVM, navController)
+            }
+            composable(Routes.EDIT){
+                navController.previousBackStackEntry?.savedStateHandle?.get<Recipe?>("recipe")
+                    ?.let { recipe ->
+                        EditRecipe(recipe, recipeVM, navController)
+                    }
             }
             composable(Routes.RECIPE){
-                Recipe(navController::navigate)
+                navController.previousBackStackEntry?.savedStateHandle?.get<Long?>("recipeId")
+                    ?.let {
+                        val recipeDet = recipeVM.getRecipeDetails(it)
+                        Recipe(recipeDet, recipeVM, navController)
+                    }
+
+//                navController.previousBackStackEntry?.savedStateHandle?.get<Recipe?>("recipe")
+//                    ?.let { recipe ->
+//
+//                    }
+            }
+            composable(Routes.CAMERAREC){
+                CameraScreenRecipe(recipeVM = recipeVM, navController = navController)
             }
 
             //user
@@ -121,9 +146,9 @@ fun Menu(mainNavController: NavController) {
                 val profileVM = hiltViewModel<ProfileViewModel>()
                 ProfileEdit(profileVM, navController::navigate)
             }
-            composable(Routes.CAMERA){
+            composable(Routes.CAMERAPROF){
                 val profileVM = hiltViewModel<ProfileViewModel>()
-                CameraScreen(profileVM = profileVM, navController = navController)
+                CameraScreenProfile(profileVM = profileVM, navController = navController)
             }
         }
     }

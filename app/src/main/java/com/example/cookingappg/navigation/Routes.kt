@@ -16,9 +16,11 @@ object Routes {
     val FILTERS = "/filters"
     //recipe pages
     val RECIPE = "/recipe"
+    val CAMERAREC = "/camerarec"
+    val EDIT = "/edit"
     //profile pages
     val FAMILY = "/family"
     val SETTINGS = "/settings"
     val EDITPROF = "/editProf"
-    val CAMERA = "/camera"
+    val CAMERAPROF = "/cameraprof"
 }

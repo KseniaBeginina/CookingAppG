@@ -118,7 +118,7 @@ fun ProfileEdit(profileVM: ProfileViewModel, navigate:(String)->Unit) {
                     .size(120.dp)
                     .clickable {
                         onClickEditAvatar(context)
-                        navigate(Routes.CAMERA)
+                        navigate(Routes.CAMERAPROF)
                         Log.d("EditImg", "tap")
                     }
             ) {

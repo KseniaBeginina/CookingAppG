@@ -79,7 +79,7 @@ fun Filters(navigate:(String)->Unit) {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TwoColorButton("Избранное") {}
-            TwoColorButton("Мои рецепты") {}
+//            TwoColorButton("Мои рецепты") {}
         }
 
         Column (

@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -35,7 +36,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,11 +44,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.example.cookingappg.navigation.Routes
+import com.example.cookingappg.presentation.pages.CameraPreview
+import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun CameraScreen(
+fun CameraScreenProfile(
     profileVM: ProfileViewModel,
     navController: NavController
 ) {
@@ -90,14 +91,22 @@ fun CameraScreen(
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(
-                    onClick = { navController.navigate(Routes.EDITPROF) }
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Primary,
+                        contentColor = White
+                    ),
+                    onClick = { navController.navigateUp()}
                 ) {
-                    Text(text = "Сохранить", color = White)
+                    Text(text = "Сохранить")
                 }
                 Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Primary,
+                        contentColor = White
+                    ),
                     onClick = { profileVM.onTakePhoto(context, null) }
                 ) {
-                    Text(text = "Назад", color = White)
+                    Text(text = "Назад")
                 }
             }
         }

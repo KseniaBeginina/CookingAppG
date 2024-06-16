@@ -7,11 +7,11 @@ import android.content.pm.PackageManager
 import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,68 +23,67 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.cookingappg.R
-import com.example.cookingappg.presentation.components.CustomButton
-import com.example.cookingappg.presentation.components.CustomOutlinedInputText
-import com.example.cookingappg.presentation.components.CustomTitle
 import com.example.cookingappg.data.Product
 import com.example.cookingappg.data.Recipe
 import com.example.cookingappg.navigation.Routes
+import com.example.cookingappg.presentation.components.CustomButton
+import com.example.cookingappg.presentation.components.CustomOutlinedInputText
+import com.example.cookingappg.presentation.components.CustomTitle
 import com.example.cookingappg.presentation.components.DishTypeChoise
 import com.example.cookingappg.ui.theme.Green
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.Red
-import com.example.cookingappg.ui.theme.TextLight
+import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.White
+import com.example.cookingappg.ui.theme.White60
 
-@OptIn(ExperimentalLayoutApi::class)
 @SuppressLint("UnrememberedMutableState", "MutableCollectionMutableState",
     "StateFlowValueCalledInComposition"
 )
 @Composable
-fun AddRecipe(recipeVM: RecipeViewModel, navController: NavController) {
+fun EditRecipe(recipe: Recipe, recipeVM: RecipeViewModel, navController: NavController) {
 
-    val name = remember { mutableStateOf("") }
-    val category = remember { mutableStateOf("завтрак") }
-    val cookTime = remember { mutableStateOf("") }
-    val portions = remember { mutableStateOf("") }
-    val calories = remember { mutableStateOf("") }
-    val proteins = remember { mutableStateOf("") }
-    val fats = remember { mutableStateOf("") }
-    val carbos = remember { mutableStateOf("") }
-    val recipeContent = remember { mutableStateOf("") }
-    val liked = remember { mutableStateOf(false) }
-    val products = remember { mutableStateListOf<Product>(Product("", "")) }
+    val recipeId = navController.previousBackStackEntry?.savedStateHandle?.get<Long>("recipeId")
+
+    val name = remember { mutableStateOf(recipe.name) }
+    val category = remember { mutableStateOf(recipe.category) }
+    val cookTime = remember { mutableStateOf(recipe.cookTime.toString()) }
+    val portions = remember { mutableStateOf(recipe.portions.toString()) }
+    val calories = remember { mutableStateOf(recipe.calories.toString()) }
+    val proteins = remember { mutableStateOf(recipe.proteins.toString()) }
+    val fats = remember { mutableStateOf(recipe.fats.toString()) }
+    val carbos = remember { mutableStateOf(recipe.carbos.toString()) }
+    val recipeContent = remember { mutableStateOf(recipe.recipeContent) }
+    val liked = remember { mutableStateOf(recipe.liked) }
+    val products = remember { recipe.products.toMutableStateList() }
+
     val bitmap = recipeVM.bitmap.value
     Log.d("bitmap", bitmap.toString())
 
@@ -109,7 +108,24 @@ fun AddRecipe(recipeVM: RecipeViewModel, navController: NavController) {
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            CustomTitle("Новый рецепт")
+            Row (
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            ){
+                IconButton(
+                    modifier = Modifier.size(32.dp),
+                    onClick = {
+                        navController.navigateUp()
+                    }
+                ){
+                    Icon(
+                        painter = painterResource(id = R.drawable.back),
+                        tint = TextDark,
+                        contentDescription = null,
+                    )
+                }
+                CustomTitle("Изменить рецепт")
+            }
 
             Column (
                 modifier = Modifier.wrapContentSize(),
@@ -123,21 +139,49 @@ fun AddRecipe(recipeVM: RecipeViewModel, navController: NavController) {
 //                    fontFamily = FontFamily(Font(R.font.montserratmedium)),
 //                    color = TextLight
 //                )
-                IconButton(
+                Box(
                     modifier = Modifier
-                        .size(52.dp)
-                        .background(Green, CircleShape),
-                    onClick = {
-                        onClickEditImage(context)
-                        navController.navigate(Routes.CAMERAREC)
-                        Log.d("EditImg", "tap")
-                    }
-                ){
-                    Icon(
-                        painter = painterResource(id = R.drawable.addimage),
-                        tint = White,
+                        .size(120.dp)
+                        .clickable {
+                            onClickEditImage(context)
+                            navController.currentBackStackEntry?.savedStateHandle?.set("recipeId", recipeId)
+                            navController.navigate(Routes.CAMERAREC)
+                            Log.d("EditImg", "tap")
+                        }
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape),
+                        model = ImageRequest.Builder(context).data(recipe.image).build(),
+                        contentScale = ContentScale.Crop,
                         contentDescription = null,
+                        error = painterResource(id = R.drawable.humster)
                     )
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .background(White60)
+                            .clip(CircleShape)
+                    ){
+                        Column (
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ){
+                            Icon(
+                                modifier = Modifier.padding(top = 35.dp),
+                                painter = painterResource(id = R.drawable.edit),
+                                contentDescription = null,
+                                tint = TextDark
+                            )
+                            Text(
+                                text = "Изменить",
+                                color = TextDark,
+                                fontFamily = FontFamily(Font(R.font.montserratsemibold)),
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
                 }
 
                 //Название
@@ -399,10 +443,10 @@ fun AddRecipe(recipeVM: RecipeViewModel, navController: NavController) {
                 onValueChange = {recipeContent.value = it}
             )
 
-            CustomButton(text = "Добавить") {
+            CustomButton(text = "Сохранить изменения") {
                 try {
-                    Log.d("test", name.value)
-                    recipeVM.addRecipe(
+                    recipeVM.updateRecipeData(
+                        recipeId = recipeId!!,
                         name = name.value,
                         category = category.value,
                         cookTime = cookTime.value.toFloat().toInt(),
@@ -413,23 +457,11 @@ fun AddRecipe(recipeVM: RecipeViewModel, navController: NavController) {
                         carbos = carbos.value.toFloat(),
                         recipeContent = recipeContent.value,
                         liked = liked.value,
-                        products = products,
-                        context = context
+                        products = products
                     )
-                    navController.navigate(Routes.HOME)
+                    navController.navigateUp()
                 } catch (e: Exception){
-                    Log.d("AddException", e.message.toString())
-                    Log.d("Name", name.toString())
-                    Log.d("Categ", category.toString())
-                    Log.d("Time", cookTime.toString())
-                    Log.d("Port", portions.toString())
-                    Log.d("Cal", calories.toString())
-                    Log.d("Prot", proteins.toString())
-                    Log.d("Fats", fats.toString())
-                    Log.d("Carbos", carbos.toString())
-                    Log.d("Cont", recipeContent.toString())
-                    Log.d("Liked", liked.toString())
-                    Log.d("Prods", products.toString())
+                    Log.d("EditException", e.message.toString())
                 }
             }
         }
@@ -519,14 +551,3 @@ private fun hasRequiredPermissions(context: Context): Boolean {
         ) == PackageManager.PERMISSION_GRANTED
     }
 }
-
-object Permissions {
-    val CAMERAX_PERMISSIONS = arrayOf(
-        android.Manifest.permission.CAMERA
-    )
-}
-//@Preview(showBackground = true)
-//@Composable
-//private fun CheckAddRecipe() {
-//    AddRecipe(){}
-//}

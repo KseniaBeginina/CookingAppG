@@ -1,5 +1,6 @@
 package com.example.cookingappg.presentation.components
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -8,6 +9,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,10 +26,10 @@ import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun DishTypeChoise (text:String, onClick:()->Unit) {
-    var containerColor by remember{ mutableStateOf(White) }
-    var textColor by remember{ mutableStateOf(TextLight) }
-    var borderColor by remember{ mutableStateOf(TextLight) }
+fun DishTypeChoise (text:String, selected: MutableState<Boolean>, onClick:(MutableState<Boolean>)->Unit) {
+    var containerColor by remember(key1 = selected.value){ mutableStateOf(if (selected.value) Primary else White) }
+    var textColor by remember(key1 = selected.value){ mutableStateOf(if (selected.value) White else TextLight) }
+    var borderColor by remember(key1 = selected.value){ mutableStateOf(if (selected.value) Primary else TextLight) }
 
     Button(
         modifier = Modifier.wrapContentSize(),
@@ -37,9 +39,16 @@ fun DishTypeChoise (text:String, onClick:()->Unit) {
         shape = RoundedCornerShape(12.dp),
         border = BorderStroke(2.dp, borderColor),
         onClick = {
-            containerColor = Primary
-            textColor = White
-            borderColor = Primary
+            onClick(selected)
+            if (selected.value){
+                containerColor = Primary
+                textColor = White
+                borderColor = Primary
+            } else {
+                containerColor = White
+                textColor = TextLight
+                borderColor = TextLight
+            }
         }
     ) {
         Text(
@@ -52,8 +61,8 @@ fun DishTypeChoise (text:String, onClick:()->Unit) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun CheckDishType() {
-    DishTypeChoise("завтрак"){}
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun CheckDishType() {
+//    DishTypeChoise("завтрак"){}
+//}

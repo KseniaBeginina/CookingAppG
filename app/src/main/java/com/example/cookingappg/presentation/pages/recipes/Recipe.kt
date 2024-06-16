@@ -1,5 +1,6 @@
 package com.example.cookingappg.presentation.pages.recipes
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -47,11 +49,18 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.protobuf.Empty
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.cookingappg.R
 import com.example.cookingappg.presentation.components.CustomOutlinedInputText
 import com.example.cookingappg.presentation.components.CustomTitle
 import com.example.cookingappg.data.Product
+import com.example.cookingappg.data.Recipe
 import com.example.cookingappg.navigation.Routes
+import com.example.cookingappg.presentation.components.CustomAlert
 import com.example.cookingappg.ui.theme.Green
 import com.example.cookingappg.ui.theme.Primary
 import com.example.cookingappg.ui.theme.Red
@@ -60,27 +69,43 @@ import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun Recipe(navigate:(String)->Unit) {
+fun Recipe(recipe: Recipe, recipeVM: RecipeViewModel, navController: NavController) {
 
-    val name: String = "Хомяк с яблоком"
-    val category: String = "Завтрак"
-    val img: String
-    val cookTime: Int = 12
-    val portions: Int = 2
-    val calories: Float = 125.8F
-    val proteins: Float = 12F
-    val fats: Float = 6F
-    val carbos: Float = 20F
-    val recipeContent: String = "Подготовить все необходимые продукты.\n" +
-            "Авокадо помыть и нарезать ломтиками. Сбрызнуть его лимонным соком.\n" +
-            "Положить на хлеб и поперчить по вкусу.\n" +
-            "При желании, хлеб можно заранее поджарить в тостере или на гриле, смазав после небольшим количеством сливочного масла.\n" +
-            "Для разнообразия можно отварить яйцо. Затем нарезать его ломтиками и положить на авокадо."
+    val recipeId = navController.previousBackStackEntry?.savedStateHandle?.get<Long?>("recipeId")
+    val context = LocalContext.current
+
+    val name = recipe.name
+    val category = recipe.category
+    val cookTime = recipe.cookTime
+    val portions = recipe.portions
+    val calories = recipe.calories
+    val proteins = recipe.proteins
+    val fats = recipe.fats
+    val carbos = recipe.carbos
+    val recipeContent = recipe.recipeContent
+    var liked by remember {
+        mutableStateOf(recipe.liked)
+    }
+    val image = recipe.image
 
     var showProducts by remember { mutableStateOf(false) }
-    val products = remember { mutableStateListOf(
-        Product("Хомяк","120"), Product("Яблоко","50")
-    ) }
+    val products = recipe.products
+
+    val openDialog = remember { mutableStateOf(false) }
+    if (openDialog.value){
+        CustomAlert(
+            text = "Вы уверены, что хотите удалить рецепт?",
+            actionText = "Удалить",
+            dismissClick = { openDialog.value = false },
+            confirmClick = {
+                recipeId?.let {
+                    recipeVM.deleteRecipe(it)
+                    openDialog.value = false
+                    navController.navigate(Routes.HOME)
+                }
+            }
+        )
+    }
 
     Column (
         modifier = Modifier
@@ -92,11 +117,13 @@ fun Recipe(navigate:(String)->Unit) {
                 .fillMaxWidth()
                 .height(280.dp)
                 .clip(RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp))
-                .paint(
-                    painterResource(id = R.drawable.humster),
-                    contentScale = ContentScale.Crop
-                )
         ){
+            AsyncImage(
+                model = ImageRequest.Builder(context).data(image).build(),
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = "Background Image",
+                contentScale = ContentScale.Crop
+            )
             Row (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -107,11 +134,19 @@ fun Recipe(navigate:(String)->Unit) {
                 IconButton(
                     modifier = Modifier.size(32.dp),
                     onClick = {
-                        navigate(Routes.HOME)
+                        try {
+                            //navController.previousBackStackEntry?.savedStateHandle?.remove<Long?>("recipeId")
+                            navController.navigateUp()
+                        }
+                        catch (e: Exception) {
+                            Log.d("exc", e.toString())
+                        }
                     }
                 ){
                     Icon(
-                        modifier = Modifier.size(30.dp),
+                        modifier = Modifier
+                            .size(30.dp)
+                            .background(White, RoundedCornerShape(20.dp)),
                         painter = painterResource(id = R.drawable.back),
                         tint = TextDark,
                         contentDescription = null,
@@ -122,11 +157,16 @@ fun Recipe(navigate:(String)->Unit) {
                 IconButton(
                     modifier = Modifier.size(32.dp),
                     onClick = {
-                        navigate(Routes.HOME)
+                        val recipeDetails = recipeVM.getRecipeDetails(recipeId!!)
+                        navController.currentBackStackEntry?.savedStateHandle?.set("recipe", recipeDetails)
+                        navController.currentBackStackEntry?.savedStateHandle?.set("recipeId", recipeId)
+                        navController.navigate(Routes.EDIT)
                     }
                 ){
                     Icon(
-                        modifier = Modifier.size(28.dp),
+                        modifier = Modifier
+                            .size(28.dp)
+                            .background(White, RoundedCornerShape(20.dp)),
                         painter = painterResource(id = R.drawable.edit),
                         tint = TextDark,
                         contentDescription = null,
@@ -135,28 +175,54 @@ fun Recipe(navigate:(String)->Unit) {
                 Spacer(modifier = Modifier.width(10.dp))
                 //Лайк
                 IconButton(
-                    modifier = Modifier.size(32.dp),
+                    modifier = Modifier
+                        .size(32.dp),
                     onClick = {
-                        navigate(Routes.HOME)
+                        Log.d("Like", "tap")
+                        recipeId?.let {
+                            recipeVM.toggleLike(it)
+                            liked = !liked
+                        }
                     }
                 ){
-                    Icon(
-                        modifier = Modifier.size(30.dp),
-                        painter = painterResource(id = R.drawable.like),
-                        tint = TextDark,
-                        contentDescription = null,
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ){
+                        Icon(
+                            modifier = Modifier
+                                .size(30.dp)
+                                .background(White, RoundedCornerShape(20.dp)),
+                            painter = painterResource(id = R.drawable.like),
+                            tint = TextDark,
+                            contentDescription = null,
+                        )
+                        if (liked){
+                            Icon(
+                                modifier = Modifier
+                                    .size(15.dp),
+                                painter = painterResource(id = R.drawable.likedfill),
+                                tint = Red,
+                                contentDescription = null,
+                            )
+                        }
+
+                    }
+
                 }
                 Spacer(modifier = Modifier.width(10.dp))
-                //Больше-удалить
+
+                //Удалить
                 IconButton(
                     modifier = Modifier.size(32.dp),
                     onClick = {
-                        navigate(Routes.HOME)
+                        openDialog.value = true
                     }
                 ){
                     Icon(
-                        modifier = Modifier.size(30.dp),
+                        modifier = Modifier
+                            .size(30.dp)
+                            .background(White, RoundedCornerShape(20.dp)),
                         painter = painterResource(id = R.drawable.delcircle),
                         tint = TextDark,
                         contentDescription = null,
@@ -386,7 +452,7 @@ fun Recipe(navigate:(String)->Unit) {
                             )
                             Text(
                                 modifier = Modifier.height(18.dp),
-                                text = "${product.number} гр.",
+                                text = "${product.productNumber} гр.",
                                 fontSize = 16.sp,
                                 fontFamily = FontFamily(Font(R.font.montserratmedium)),
                                 color = TextLight
@@ -416,31 +482,33 @@ fun Recipe(navigate:(String)->Unit) {
             }
 
             //Автор
-            Row (
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ){
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.chef),
-                    tint = TextDark,
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.montserratmedium)),
-                    color = TextDark,
-                    text = "Имя повара"
-                )
-            }
+//            Row (
+//                modifier = Modifier.fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center
+//            ){
+//                Icon(
+//                    modifier = Modifier.size(24.dp),
+//                    painter = painterResource(id = R.drawable.chef),
+//                    tint = TextDark,
+//                    contentDescription = null
+//                )
+//                Spacer(modifier = Modifier.width(8.dp))
+//                Text(
+//                    fontSize = 16.sp,
+//                    fontFamily = FontFamily(Font(R.font.montserratmedium)),
+//                    color = TextDark,
+//                    text = "Имя повара"
+//                )
+//            }
         }
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun CheckRecipe() {
-    Recipe(){}
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun CheckRecipe() {
+//    val recipeVM = hiltViewModel<RecipeViewModel>()
+//    val navController = rememberNavController()
+//    Recipe(recipeVM, navController)
+//}
