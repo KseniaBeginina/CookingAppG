@@ -43,7 +43,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun logOut(){
-        runBlocking {
+        viewModelScope.launch {
             localManager.removeAppEntry()
             prefs.edit().remove("userId").apply()
         }

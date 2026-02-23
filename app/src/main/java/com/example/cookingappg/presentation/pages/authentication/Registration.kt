@@ -98,36 +98,36 @@ fun Registration(authVM: AuthViewModel, navigate:(String)->Unit) {
                 )
             }
 
-            Row (
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 16.dp)
-            ){
-                Image(
-                    painter = painterResource(id = R.drawable.line),
-                    contentDescription = null,
-                    modifier = Modifier.width(146.dp)
-                )
-                Text(
-                    text = "ИЛИ",
-                    fontSize = 14.sp,
-                    fontFamily = FontFamily(Font(R.font.montserratmedium)),
-                    color = TextLight
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.line),
-                    contentDescription = null,
-                    modifier = Modifier.width(146.dp)
-                )
-            }
-            Image(
-                painter = painterResource(id = R.drawable.socials),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(32.dp)
-                    .clickable {
-                        Log.d("Google", "click")
-                    }
-            )
+//            Row (
+//                verticalAlignment = Alignment.CenterVertically,
+//                modifier = Modifier.padding(top = 16.dp)
+//            ){
+//                Image(
+//                    painter = painterResource(id = R.drawable.line),
+//                    contentDescription = null,
+//                    modifier = Modifier.width(146.dp)
+//                )
+//                Text(
+//                    text = "ИЛИ",
+//                    fontSize = 14.sp,
+//                    fontFamily = FontFamily(Font(R.font.montserratmedium)),
+//                    color = TextLight
+//                )
+//                Image(
+//                    painter = painterResource(id = R.drawable.line),
+//                    contentDescription = null,
+//                    modifier = Modifier.width(146.dp)
+//                )
+//            }
+//            Image(
+//                painter = painterResource(id = R.drawable.socials),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .size(32.dp)
+//                    .clickable {
+//                        Log.d("Google", "click")
+//                    }
+//            )
         }
 
         Column(

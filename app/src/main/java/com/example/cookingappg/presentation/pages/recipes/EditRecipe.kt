@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -93,7 +94,7 @@ fun EditRecipe(recipe: Recipe, recipeVM: RecipeViewModel, navController: NavCont
         modifier = Modifier
             .fillMaxWidth()
             .height(730.dp)
-            .padding(bottom = 72.dp)
+            .padding(bottom = 60.dp)
             .background(White)
             .verticalScroll(
                 rememberScrollState()
@@ -449,24 +450,32 @@ fun EditRecipe(recipe: Recipe, recipeVM: RecipeViewModel, navController: NavCont
             )
 
             CustomButton(text = "Сохранить изменения") {
-                try {
-                    recipeVM.updateRecipeData(
-                        recipeId = recipeId!!,
-                        name = name.value,
-                        category = category.value,
-                        cookTime = cookTime.value.toFloat().toInt(),
-                        portions = portions.value.toFloat().toInt(),
-                        calories = calories.value.toFloat(),
-                        proteins = proteins.value.toFloat(),
-                        fats = fats.value.toFloat(),
-                        carbos = carbos.value.toFloat(),
-                        recipeContent = recipeContent.value,
-                        liked = liked.value,
-                        products = products
-                    )
-                    navController.navigateUp()
-                } catch (e: Exception){
-                    Log.d("EditException", e.message.toString())
+                if (name.value.isEmpty() || cookTime.value.isEmpty() || portions.value.isEmpty() ||
+                    calories.value.isEmpty() || proteins.value.isEmpty() || fats.value.isEmpty() ||
+                    carbos.value.isEmpty() || recipeContent.value.isEmpty()){
+                    Toast.makeText(context, "Поля не могут быть пустыми", Toast.LENGTH_SHORT).show()
+                }else if(category.value.isEmpty()){
+                    Toast.makeText(context, "Выберите категорию рецепта", Toast.LENGTH_SHORT).show()
+                }else {
+                    try {
+                        recipeVM.updateRecipeData(
+                            recipeId = recipeId!!,
+                            name = name.value,
+                            category = category.value,
+                            cookTime = cookTime.value.toFloat().toInt(),
+                            portions = portions.value.toFloat().toInt(),
+                            calories = calories.value.toFloat(),
+                            proteins = proteins.value.toFloat(),
+                            fats = fats.value.toFloat(),
+                            carbos = carbos.value.toFloat(),
+                            recipeContent = recipeContent.value,
+                            liked = liked.value,
+                            products = products
+                        )
+                        navController.navigateUp()
+                    } catch (e: Exception) {
+                        Log.d("EditException", e.message.toString())
+                    }
                 }
             }
         }

@@ -184,7 +184,17 @@ fun Home(recipeVM: RecipeViewModel, recipes: List<RecipePreview>, navController:
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ){
                     recipesRez.value.forEach{recipe ->
-                        DishShortCard(recipePrew = recipe, recipeVM = recipeVM) {
+                        DishShortCard(recipePrew = recipe, recipeVM = recipeVM, onLikeClick = {
+                            if (!it) {
+                                recipesRez.value = recipeVM.getWithFilters(
+                                    query = query.value,
+                                    categories = listOf(),
+                                    liked = liked.value,
+                                    minTime = from.value.toInt(),
+                                    maxTime = to.value.toInt()
+                                )
+                            }
+                        }) {
                             val recipeDetails = recipeVM.getRecipeDetails(recipe.id)
                             navController.currentBackStackEntry?.savedStateHandle?.set("recipe", recipeDetails)
                             navController.currentBackStackEntry?.savedStateHandle?.set("recipeId", recipe.id)

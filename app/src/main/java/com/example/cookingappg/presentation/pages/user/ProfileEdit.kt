@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -205,13 +206,18 @@ fun ProfileEdit(profileVM: ProfileViewModel, navigate:(String)->Unit) {
             }
 
             CustomButton(text = "Сохранить изменения") {
-                profileVM.updateUserData(
-                    name = userName.value,
-                    email = email.value,
-                    oldPassword = password.value,
-                    newPassword = newPassword.value
-                )
-                Log.d("Save", "tap")
+                if (userName.value.isEmpty() || email.value.isEmpty() || password.value.isEmpty() ||
+                    newPassword.value.isEmpty()){
+                    Toast.makeText(context, "Поля не могут быть пустыми", Toast.LENGTH_SHORT).show()
+                }else {
+                    profileVM.updateUserData(
+                        name = userName.value,
+                        email = email.value,
+                        oldPassword = password.value,
+                        newPassword = newPassword.value
+                    )
+                    Log.d("Save", "tap")
+                }
             }
 
             Text(

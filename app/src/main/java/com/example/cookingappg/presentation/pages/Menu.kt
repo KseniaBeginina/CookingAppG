@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -149,7 +150,14 @@ fun Menu(mainNavController: NavController) {
             //user
             composable(Routes.PROFILE){
                 val profileVM = hiltViewModel<ProfileViewModel>()
-                Profile(profileVM, mainNavController, navController)
+                val previews = recipeVM.getWithFilters(
+                    query = "",
+                    categories = listOf(),
+                    liked = true,
+                    minTime = 0,
+                    maxTime = 90
+                )
+                Profile(previews, recipeVM, profileVM, mainNavController, navController)
             }
             composable(Routes.EDITPROF){
                 val profileVM = hiltViewModel<ProfileViewModel>()
@@ -184,7 +192,7 @@ fun NavBar(
     NavigationBar(
         modifier = Modifier
             .fillMaxWidth()
-            .height(72.dp),
+            .wrapContentHeight(),
         containerColor = White,
         tonalElevation = 10.dp
     ) {

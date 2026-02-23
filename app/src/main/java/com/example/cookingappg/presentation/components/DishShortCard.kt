@@ -46,7 +46,7 @@ import com.example.cookingappg.ui.theme.TextDark
 import com.example.cookingappg.ui.theme.TextLight
 
 @Composable
-fun DishShortCard(recipePrew: RecipePreview, recipeVM: RecipeViewModel, onClick:()->Unit) {
+fun DishShortCard(recipePrew: RecipePreview, recipeVM: RecipeViewModel, onLikeClick: (Boolean) -> Unit = {}, onClick:()->Unit) {
 
     val context = LocalContext.current
     Column(
@@ -87,7 +87,7 @@ fun DishShortCard(recipePrew: RecipePreview, recipeVM: RecipeViewModel, onClick:
                 fontFamily = FontFamily(Font(R.font.montserratmedium)),
                 color = TextDark
             )
-            var liked by remember {
+            var liked by remember(key1 = recipePrew.liked) {
                 mutableStateOf(recipePrew.liked)
             }
             Icon(
@@ -97,6 +97,7 @@ fun DishShortCard(recipePrew: RecipePreview, recipeVM: RecipeViewModel, onClick:
                         Log.d("Like", "tap")
                         recipeVM.toggleLike(recipePrew.id)
                         liked = !liked
+                        onLikeClick(liked)
                     },
                 painter = painterResource(id = R.drawable.heart),
                 tint = if (liked) Red else TextLight,

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -94,7 +95,7 @@ fun AddRecipe(recipeVM: RecipeViewModel, navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .height(730.dp)
-            .padding(bottom = 72.dp)
+            .padding(bottom = 60.dp)
             .background(White)
             .verticalScroll(
                 rememberScrollState()
@@ -400,36 +401,32 @@ fun AddRecipe(recipeVM: RecipeViewModel, navController: NavController) {
             )
 
             CustomButton(text = "Добавить") {
-                try {
-                    Log.d("test", name.value)
-                    recipeVM.addRecipe(
-                        name = name.value,
-                        category = category.value,
-                        cookTime = cookTime.value.toFloat().toInt(),
-                        portions = portions.value.toFloat().toInt(),
-                        calories = calories.value.toFloat(),
-                        proteins = proteins.value.toFloat(),
-                        fats = fats.value.toFloat(),
-                        carbos = carbos.value.toFloat(),
-                        recipeContent = recipeContent.value,
-                        liked = liked.value,
-                        products = products,
-                        context = context
-                    )
-                    navController.navigate(Routes.HOME)
-                } catch (e: Exception){
-                    Log.d("AddException", e.message.toString())
-                    Log.d("Name", name.toString())
-                    Log.d("Categ", category.toString())
-                    Log.d("Time", cookTime.toString())
-                    Log.d("Port", portions.toString())
-                    Log.d("Cal", calories.toString())
-                    Log.d("Prot", proteins.toString())
-                    Log.d("Fats", fats.toString())
-                    Log.d("Carbos", carbos.toString())
-                    Log.d("Cont", recipeContent.toString())
-                    Log.d("Liked", liked.toString())
-                    Log.d("Prods", products.toString())
+                if (name.value.isEmpty() || cookTime.value.isEmpty() || portions.value.isEmpty() ||
+                    calories.value.isEmpty() || proteins.value.isEmpty() || fats.value.isEmpty() ||
+                    carbos.value.isEmpty() || recipeContent.value.isEmpty()){
+                    Toast.makeText(context, "Поля не могут быть пустыми", Toast.LENGTH_SHORT).show()
+                }else if(category.value.isEmpty()){
+                    Toast.makeText(context, "Выберите категорию рецепта", Toast.LENGTH_SHORT).show()
+                }else {
+                    try {
+                        recipeVM.addRecipe(
+                            name = name.value,
+                            category = category.value,
+                            cookTime = cookTime.value.toFloat().toInt(),
+                            portions = portions.value.toFloat().toInt(),
+                            calories = calories.value.toFloat(),
+                            proteins = proteins.value.toFloat(),
+                            fats = fats.value.toFloat(),
+                            carbos = carbos.value.toFloat(),
+                            recipeContent = recipeContent.value,
+                            liked = liked.value,
+                            products = products,
+                            context = context
+                        )
+                        navController.navigate(Routes.HOME)
+                    } catch (e: Exception) {
+                        Log.d("AddException", e.message.toString())
+                    }
                 }
             }
         }

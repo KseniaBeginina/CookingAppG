@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,12 +27,18 @@ import com.example.cookingappg.ui.theme.TextLight
 import com.example.cookingappg.ui.theme.White
 
 @Composable
-fun CustomInput (state: MutableState<String>, placeholder:String, keyboardType: KeyboardType) {
+fun CustomInput (
+    state: MutableState<String>,
+    placeholder:String,
+    keyboardType: KeyboardType,
+    visualTransformation: VisualTransformation = VisualTransformation.None
+) {
 
     TextField(
         modifier = Modifier.size(width = 343.dp, height = 56.dp),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
         singleLine = true,
+        visualTransformation = visualTransformation,
         colors = TextFieldDefaults.colors(
             unfocusedContainerColor = White,
             unfocusedTextColor = TextLight,
